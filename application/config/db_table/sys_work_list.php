@@ -1,0 +1,42 @@
+<?php 
+defined('BASEPATH') OR exit('No direct script access allowed'); 
+ 
+$config['sys_work_list'] = array( 
+  'table_name_show'=>'工单列表', 
+  'table_note'=>'',
+  'type'=>'merge',
+  'fields'=>array( 
+    'wl_id'=> array('type'=>'VARCHAR','constraint'=>'40','comment'=>'主键',), 
+    'db_time_update'=> array('type'=>'DATETIME','constraint'=>'','comment'=>'数据更新时间','null'=>TRUE,), 
+    'db_time_create'=> array('type'=>'DATETIME','constraint'=>'','comment'=>'创建时间','null'=>TRUE,), 
+    'db_person_create'=> array('type'=>'VARCHAR','constraint'=>'40','comment'=>'创建人','null'=>TRUE,), 
+    'wl_code'=> array('type'=>'VARCHAR','constraint'=>'80','comment'=>'工单编号','null'=>TRUE,), 
+    'wl_url'=> array('type'=>'TEXT','constraint'=>'','comment'=>'工单链接','null'=>TRUE,), 
+    'wl_status'=> array('type'=>'TINYINT','constraint'=>'3','comment'=>'工单状态','default'=>'0','UNSIGNED'=>TRUE,'null'=>TRUE,), 
+    'wl_person_do'=> array('type'=>'VARCHAR','constraint'=>'40','comment'=>'工单执行人','null'=>TRUE,), 
+	'wl_event'=> array('type'=>'VARCHAR','constraint'=>'200','comment'=>'工单事务','null'=>TRUE,), 
+    'wl_note'=> array('type'=>'TEXT','constraint'=>'','comment'=>'工单简述','null'=>TRUE,), 
+    'wl_time_do'=> array('type'=>'DATETIME','constraint'=>'','comment'=>'工单执行时间','null'=>TRUE,), 
+    'wl_comment'=> array('type'=>'TEXT','constraint'=>'','comment'=>'评论','null'=>TRUE,), 
+    'op_id'=> array('type'=>'VARCHAR','constraint'=>'40','comment'=>'对象','null'=>TRUE,), 
+	'pp_id'=> array('type'=>'VARCHAR','constraint'=>'40','comment'=>'单据','null'=>TRUE,), 
+    'wl_time_end'=> array('type'=>'DATETIME','constraint'=>'','comment'=>'工单截至时间','null'=>TRUE,), 
+    'wl_op_table'=> array('type'=>'VARCHAR','constraint'=>'120','comment'=>'对象表格','null'=>TRUE,), 
+    'wl_op_field'=> array('type'=>'VARCHAR','constraint'=>'120','comment'=>'对象字段','null'=>TRUE,), 
+    'p_id'=> array('type'=>'VARCHAR','constraint'=>'40','null'=>TRUE,), 
+    'wl_result'=> array('type'=>'TINYINT','constraint'=>'3','comment'=>'工单结果','default'=>'0','UNSIGNED'=>TRUE,'null'=>TRUE,), 
+    'wl_type'=> array('type'=>'TINYINT','constraint'=>'3','comment'=>'工单类型','default'=>'0','UNSIGNED'=>TRUE,'null'=>TRUE,), 
+    'wl_proc'=> array('type'=>'VARCHAR','constraint'=>'80','comment'=>'工单节点','null'=>TRUE,), 
+	'wl_proc_line'=> array('type'=>'TEXT','constraint'=>'','comment'=>'工单流程','null'=>TRUE,), 
+    'wl_comment_new'=> array('type'=>'TEXT','constraint'=>'','comment'=>'最新留言','null'=>TRUE,), 
+    'wl_log_note'=> array('type'=>'TEXT','constraint'=>'','comment'=>'日志','null'=>TRUE,), 
+	'wl_combine'=> array('type'=>'TINYINT','constraint'=>'3','comment'=>'联合工单','default'=>'0','UNSIGNED'=>TRUE,'null'=>TRUE,),
+  ),  
+  'primary_key'=>array( 
+    'wl_id', 
+  ),  
+  'fields_index'=>array(),
+  'fields_add'=>array(), 
+  'fields_modify'=>array(), 
+  'fields_drop'=>array(), 
+);  

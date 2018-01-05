@@ -1,0 +1,878 @@
+<!-- 加载jquery -->
+<script type="text/javascript">
+
+//载入数据
+var data_<?=$time?>=<?=$data?>;   
+var arr_view<?=$time?>=<?=$field_view;?>;
+var arr_edit<?=$time?>=<?=$field_edit;?>;
+var arr_required<?=$time?>=<?=$field_required;?>;
+
+//初始化
+$(document).ready(function(){
+
+	load_win_loading('win_loading<?=$time?>')
+	
+	//添加禁用
+	fun_l_disable_class('tab_edit_<?=$time?>',<?=$op_disable;?>);
+
+	//载入联系人
+	load_table_c<?=$time?>();
+	
+	//载入收货信息
+	load_table_addr<?=$time?>();
+	
+	//载入账户信息
+	load_table_account<?=$time?>();
+
+	setTimeout(function(){
+		
+		//添加只读，编辑,必填
+		fun_form_operate('f_<?=$time?>',arr_view<?=$time?>,arr_edit<?=$time?>,arr_required<?=$time?>);
+
+		//载入数据
+		load_form_data_<?=$time?>();
+
+
+	},500);
+
+	//标题
+	var title_conf = {};
+	title_conf.fun_open ='<?=$fun_open?>';
+	title_conf.fun_open_id = '<?=$fun_open_id?>';
+	title_conf.title = '<?=$title;?>';
+	title_conf.type = 'edit';
+	
+	fun_load_title(title_conf)
+});
+
+//载入数据
+function load_form_data_<?=$time?>()
+{
+	$('#f_<?=$time?>').form('clear');
+
+	//载入数据
+	$('#f_<?=$time?>').form('load',data_<?=$time?>);
+	
+	//载入数据(其他控件)
+	fun_form_load_data_other('f_<?=$time?>',data_<?=$time?>);
+
+    if (!'<?=$log_time?>') return;
+	
+	//添加日志
+	var log=<?=$log?>;
+
+	$("#hd_err_f_<?=$time?>").val(1);
+
+	fun_show_errmsg_of_form('f_<?=$time?>',log);
+
+	$('#f_<?=$time?>').form('enableValidation').form('validate');
+}
+
+//刷新页面
+function reload_page<?=$time?>(url_reload)
+{
+	var url = url_reload;
+	if( ! url )
+		url = '<?=$url;?>';
+		
+	switch('<?=$fun_open?>')
+	{
+		case 'win':
+			$('#<?=$fun_open_id?>').attr('reload',1);
+			$('#<?=$fun_open_id?>').window('refresh',url);
+			break;
+		case 'tab':
+			var tab =$('#<?=$fun_open_id?>').tabs('getSelected');
+			tab.panel('refresh',url);
+			break;
+		case 'winopen':
+		case '':
+			window.location.href = url
+			break;
+	}
+}
+
+//提交数据
+function f_submit_<?=$time?>(btn)
+{
+	$("#hd_err_f_<?=$time?>").val('');
+	
+	$('#f_<?=$time?>').form('submit',{
+		url:'<?=$url;?>',
+		onSubmit:function(param){
+
+			if( btn == 'save' || btn == 'next' )
+			{
+				var check= $(this).form('enableValidation').form('validate');
+			}
+			else
+			{
+				var check=true;
+				$(this).form('disableValidation');
+			}
+
+			if(check)
+			{
+				var data_form = fun_get_data_from_f('f_<?=$time?>');
+				
+				$('#win_loading<?=$time?>').window('open');
+				param.btn=btn;
+
+				param['content[o_tag]']=data_form['content[o_tag]'];
+				param['content[org_c]']=data_form['content[org_c]'];
+				param['content[org_addr]']=data_form['content[org_addr]'];
+				param['content[org_account]']=data_form['content[org_account]'];
+			}
+			else
+			{
+				$(this).form('enableValidation').form('validate');
+				
+				return false;
+			}
+
+		},
+		success: function(data){
+			alert(data);
+
+			$('#win_loading<?=$time?>').window('close');
+			
+			var json={};
+			var act='<?=$act?>'
+			if(data) json=JSON.parse(data);
+
+			if( ! json.rtn)
+			{
+				$("#hd_err_f_<?=$time?>").val(1);
+
+				if(json.err.db_time_update)
+				{
+					$.messager.show({
+				    	title:'警告',
+				    	msg: json.err.db_time_update,
+				    	timeout:1500,
+				    	showType:'show',
+				    	border:'thin',
+		                style:{
+		                    right:'',
+		                    bottom:'',
+		                }
+				    });
+
+					//刷新页面
+					setTimeout("reload_page<?=$time?>();",1500);
+					
+					return;
+				}
+
+				//组织机构代码已存在
+				if(json.err.o_id_exist)
+				{
+					$.messager.confirm('确认',json.err.o_id_exist,function(r){
+						if (r){
+
+							if($('#o_id_exist<?=$time?>').length == 0 )
+								$('#table_f_<?=$time?>').after('<input id="o_id_exist<?=$time?>" type="hidden" name="content[o_id_exist]" value="1"/>');
+							else
+								$('#o_id_exist<?=$time?>').val(1);
+
+							f_submit_<?=$time?>(btn)
+						}
+					});
+
+					return;
+				}
+
+				if(json.err.msg)
+				{
+					$.messager.show({
+						title:'警告',
+						msg: json.err.msg,
+						timeout:5000,
+						showType:'show',
+						border:'thin',
+						style:{
+							right:'',
+							bottom:'',
+						}
+					});
+
+					return;
+				}
+
+				//遍历form 错误消息添加
+				fun_show_errmsg_of_form('f_<?=$time?>',json.err);
+
+				$(this).form('enableValidation').form('validate');
+			}
+			else
+			{
+				//删除
+				if(btn == 'del')
+				{
+					switch('<?=$fun_open?>')
+					{
+						case 'win':
+							$('#<?=$fun_open_id?>').attr('reload',1);
+							$('#<?=$fun_open_id?>').window('close');
+							break;
+						case 'tab':
+							var tab =$('#<?=$fun_open_id?>').tabs('getSelected');
+							var index = $('#<?=$fun_open_id?>').tabs('getTabIndex',tab);
+							$('#<?=$fun_open_id?>').tabs('close',index);
+							break;
+						case 'winopen':
+						case '':
+							window.close();
+							break;
+					}
+				}
+				else
+				{
+					var url=trim('<?=$url?>','.html');
+
+					//创建
+					if('<?=$act?>'=='<?=STAT_ACT_CREATE?>')
+					{
+						url=url.replace('/act/1','');
+						url+='/act/<?=STAT_ACT_EDIT?>/o_id/'+json.id
+
+						reload_page<?=$time?>(url)
+					}
+					//编辑
+					else
+					{
+						$.messager.show({
+    				    	title:'通知',
+    				    	msg:'操作成功！',
+    				    	timeout:500,
+    				    	showType:'show',
+    				    	border:'thin',
+    		                style:{
+    		                    right:'',
+    		                    bottom:'',
+    		                }
+    				    });
+
+    				    $('#f_<?=$time?> .db_time_update').val(json.db_time_update);
+					}
+				}
+			}
+		}
+	});
+}
+
+//标准名称自动补全
+function load_o_id_standard<?=$time?>()
+{
+	var opt = $('#txtb_o_id_standard_s<?=$time?>').textbox('options');
+
+	if(  opt.readonly ) return;
+
+	$('#txtb_o_id_standard_s<?=$time?>').textbox('textbox').autocomplete({
+		serviceUrl: 'base/auto/get_json_org/search_o_status/1',
+		params:{
+			rows:10,
+		},
+		onSelect: function (suggestion) {
+			$('#txtb_o_id_standard_s<?=$time?>').textbox('setValue',base64_decode(suggestion.data.o_id_standard_s));
+			$('#txtb_o_id_standard<?=$time?>').val(base64_decode(suggestion.data.o_id_standard))
+		}
+	});
+}
+
+//联系人--载入
+function load_table_c<?=$time?>()
+{
+	$('#table_c<?=$time?>').datagrid({
+		width:'100%',
+		height:'150',
+		toolbar:'#table_c_tool<?=$time?>',
+		singleSelect:true,
+		selectOnCheck:false,
+		checkOnSelect:false,
+		striped:true,
+		idField:'c_id',
+		data: [],
+		destroyMsg:{
+			norecord:{    // 在没有记录选择的时候执行
+				title:'警告',
+				msg:'没有选择要删除的行！'
+			},
+			confirm:{       // 在选择一行的时候执行
+				title:'确认',
+				msg:'确定要删除此行吗?',
+			}
+		},
+		columns:[[
+			{field:'c_id',title:'',width:50,align:'center',checkbox:true
+			},
+			{field:'c_name',title:'姓名',width:100,halign:'center',align:'left',
+			 	formatter: fun_table_c_formatter<?=$time?>,
+			},
+			{field:'c_sex',title:'性别',width:60,halign:'center',align:'center',
+				formatter: fun_table_c_formatter<?=$time?>,
+			},
+			{field:'c_tel',title:'手机',width:100,halign:'center',align:'center',
+				formatter: fun_table_c_formatter<?=$time?>,
+			},
+			{field:'c_phone',title:'固定电话',width:100,halign:'center',align:'center',
+				formatter: fun_table_c_formatter<?=$time?>,
+			},
+			{field:'c_email',title:'Email',width:200,halign:'center',align:'center',
+				formatter: fun_table_c_formatter<?=$time?>,
+			},
+			{field:'c_note',title:'备注',width:200,halign:'center',align:'center',
+				formatter: fun_table_c_formatter<?=$time?>,
+			}
+		]],
+        rowStyler: function(index,row){
+            if (row.act == <?=STAT_ACT_CREATE?>)
+                return 'background:#ffd2d2';
+            if (row.act == <?=STAT_ACT_REMOVE?>)
+                return 'background:#e0e0e0';
+
+        },
+		onBeginEdit: function(index,row)
+		{
+		},
+		onEndEdit: function(index, row, changes)
+		{
+		}
+	});
+
+	if( arr_view<?=$time?>.indexOf('content[org_c]')>-1 )
+	{
+		$('#table_c_tool<?=$time?> .oa_op').hide();
+	}
+}
+
+//列格式化输出
+function fun_table_c_formatter<?=$time?>(value,row,index){
+
+	switch(this.field)
+	{
+		case 'c_name':
+			
+			var url='proc_contact/contact/edit/act/2/from/org/fun_no_db/fun_no_db_table_c<?=$time?>';
+			value='<a href="javascript:void(0);" class="link" onClick="fun_table_c_win_open<?=$time?>(\''+row.c_name.substring(0,10)+'\',\'win\',\''+url+'\',\''+row.c_id+'\');">'+value+'</a>';
+			break;
+		case 'c_sex':
+			switch(value)
+			{
+				case '1':
+					value = '男';
+					break;
+				case '2':
+					value = '女';
+					break;
+			}
+			break;
+	}
+
+	if( ! value ) value = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ;
+	return '<span id="table_c<?=$time?>_'+index+'_'+this.field+'" class="table_c<?=$time?>" >'+value+'</span>';
+
+}
+
+function fun_table_c_win_open<?=$time?>(title,fun,url,id)
+{
+    switch(fun)
+    {
+        case 'win':
+
+            var row ={};
+            if(id)
+            {
+                $('#table_c<?=$time?>').datagrid('selectRecord',id);
+                row = $('#table_c<?=$time?>').datagrid('getSelected');
+            }
+
+            var win_id=fun_get_new_win();
+
+            var params={};
+            params.data_db = base64_encode(JSON.stringify(row));
+
+            if( '<?=$log_time?>')
+            {
+                var log_content = $('#table_c<?=$time?>').attr('log_content');
+
+                if(log_content && id)
+                {
+                    log_content = JSON.parse(log_content);
+
+                    if( ! ( id in log_content ) )
+                    {
+                        log_content[id] = {};
+                        log_content[id]['old'] = {};
+                        log_content[id]['old']['content'] = {};
+                    }
+
+                    JSON.parse(JSON.stringify(row), function (key, value) {
+                        if( ! (key in log_content[id]['old'].content) )
+                            log_content[id]['old'].content[key] = value
+                    });
+
+                    log_content[id]['new'] = {};
+                    log_content[id]['new'].content = row;
+
+                    params.log_content = JSON.stringify(log_content[id]);
+
+                    if( '<?=$log_time?>' )
+                    {
+                        params.flag_log = 1;
+                        params.log_time = '<?=$log_time?>';
+                        params.log_a_login_id = '<?=$log_a_login_id?>';
+                        params.log_c_name = '<?=$log_c_name?>';
+                        params.log_act = '<?=$log_act?>';
+                        params.log_note = '<?=$log_note?>';
+                    }
+                    else
+                        params.flag_check = 1;
+                }
+            }
+
+            $('#'+win_id).window({
+                title: 'title',
+                inline:true,
+                modal:true,
+                closed:true,
+                border:'thin',
+                draggable:false,
+                resizable:false,
+                collapsible:false,
+                minimizable:false,
+                maximizable:false,
+                method:'post',
+                queryParams: params,
+                onClose: function()
+                {
+                    $('#'+win_id).window('destroy');
+                    $('#'+win_id).remove();
+                }
+            })
+
+            $('#'+win_id).window('refresh',url+'/fun_open/win/fun_open_id/'+win_id);
+
+            break;
+    }
+}
+//界面
+//function fun_table_c_win_open<?//=$time?>//(title,fun,url,id)
+//{
+//	switch(fun)
+//	{
+//		case 'win':
+//
+//			var row ={};
+//			if(id)
+//			{
+//				var data_form = fun_get_data_from_f('f_<?//=$time?>//',1);
+//				var index = $('#table_c<?//=$time?>//').datagrid('getRowIndex',id);
+//				var rows = $('#table_c<?//=$time?>//').datagrid('getRows');
+//				row = rows[index];
+//				row.c_org_s = data_form['o_name']
+//			}
+//
+//			var win_id=fun_get_new_win();
+//
+//            if( '<?//=$log_time?>//' ||  '<?//=$flag_check?>//')
+//            {
+//                var log_content = $('#table_c<?//=$time?>//').attr('log_content');
+//
+//                if(log_content && id)
+//                {
+//                    log_content = JSON.parse(log_content);
+//
+//                    if( ! ( id in log_content ) )
+//                    {
+//                        log_content[id] = {};
+//                        log_content[id]['old'] = {};
+//                        log_content[id]['old']['content'] = {};
+//                    }
+//
+//                    JSON.parse(JSON.stringify(row), function (key, value) {
+//                        if( ! (key in log_content[id]['old'].content) )
+//                            log_content[id]['old'].content[key] = value
+//                    });
+//
+//                    log_content[id]['new'] = {};
+//                    log_content[id]['new'].content = row;
+//
+//                    params.log_content = JSON.stringify(log_content[id]);
+//
+//                    if( '<?//=$log_time?>//' )
+//                    {
+//                        params.flag_log = 1;
+//                        params.log_time = '<?//=$log_time?>//';
+//                        params.log_a_login_id = '<?//=$log_a_login_id?>//';
+//                        params.log_c_name = '<?//=$log_c_name?>//';
+//                        params.log_act = '<?//=$log_act?>//';
+//                        params.log_note = '<?//=$log_note?>//';
+//                    }
+//                    else
+//                        params.flag_check = 1;
+//                }
+//            }
+//
+//			$('#'+win_id).window({
+//				title: 'title',
+//				inline:true,
+//				modal:true,
+//				closed:true,
+//				border:'thin',
+//				draggable:false,
+//				resizable:false,
+//				collapsible:false,
+//				minimizable:false,
+//				maximizable:false,
+//				method:'post',
+//				queryParams:{
+//					'data_db' : base64_encode(JSON.stringify(row))
+//				},
+//				onClose: function()
+//				{
+//					$('#'+win_id).window('destroy');
+//					$('#'+win_id).remove();
+//				}
+//			})
+//
+//			$('#'+win_id).window('refresh',url+'/fun_open/win/fun_open_id/'+win_id);
+//
+//			break;
+//	}
+//}
+
+//联系人--操作
+function fun_table_c_operate<?=$time?>(btn)
+{
+	switch(btn)
+	{
+		case 'add':
+
+			var data_form = fun_get_data_from_f('f_<?=$time?>',1);
+			var url = 'proc_contact/contact/edit/fun_no_db/fun_no_db_table_c<?=$time?>/act/1/from/org';
+
+			var c_org_s = data_form['o_name'];
+			if(c_org_s) url+='/c_org_s/'+base64_encode(c_org_s);
+
+			url+='/c_org/<?=$o_id?>';
+
+			fun_table_c_win_open<?=$time?>('创建机构联系人','win',url)
+			
+			break;
+		case 'del':
+
+			var op_list=$('#table_c<?=$time?>').datagrid('getChecked');
+
+			var row_s = $('#table_c<?=$time?>').datagrid('getSelected');
+			var index_s = $('#table_c<?=$time?>').datagrid('getRowIndex',row_s);
+
+			if($('#table_c<?=$time?>').datagrid('validateRow',index_s))
+			{
+				$('#table_c<?=$time?>').datagrid('endEdit',index_s);
+			}
+			else
+			{
+				$('#table_c<?=$time?>').datagrid('cancelEdit',index_s);
+			}
+
+			for(var i=op_list.length-1;i>-1;i--)
+			{
+				var index = $('#table_c<?=$time?>').datagrid('getRowIndex',op_list[i]);
+				$('#table_c<?=$time?>').datagrid('deleteRow',index);
+			}
+
+			break;
+	}
+}
+
+function fun_no_db_table_c<?=$time?>(f_id,btn)
+{
+	var row = fun_get_data_from_f(f_id,'1');
+	
+	$('#'+f_id).closest('.op_window').window('close');
+
+	if( row.c_id )
+	{
+		var index_s = $('#table_c<?=$time?>').datagrid('getRowIndex',row.c_id);
+
+		if(btn == 'del')
+		{
+			$('#table_c<?=$time?>').datagrid('deleteRow',index_s);
+			return;
+		}
+		
+		$('#table_c<?=$time?>').datagrid('updateRow',{
+			index: index_s,
+			row: row
+		});
+	}
+	else
+	{
+		row.c_id = get_guid();
+		$('#table_c<?=$time?>').datagrid('appendRow',row);
+	}
+}
+
+//收货信息--载入
+function load_table_addr<?=$time?>()
+{
+	$('#table_addr<?=$time?>').edatagrid({
+		width:'100%',
+		height:'150',
+		toolbar:'#table_addr_tool<?=$time?>',
+		singleSelect:true,
+		selectOnCheck:false,
+		checkOnSelect:false,
+		striped:true,
+		idField:'o_addr_id',
+		data: [],
+		destroyMsg:{
+			norecord:{    // 在没有记录选择的时候执行
+				title:'警告',
+				msg:'没有选择要删除的行！'
+			},
+			confirm:{       // 在选择一行的时候执行
+				title:'确认',
+				msg:'确定要删除此行吗?',
+			}
+		},
+		columns:[[
+			{field:'o_addr_id',title:'',width:50,align:'center',checkbox:true
+			},
+			{field:'o_addr_content',title:'收货地址',width:450,halign:'center',align:'left',formatter: fun_table_addr_formatter<?=$time?>,
+				editor:{
+					type:'textbox',
+					options:{
+						required : true,
+						buttonIcon:'icon-clear',
+				    	onClickButton:function()
+				        {
+							$(this).textbox('clear');
+				        },
+					}
+				}
+			},
+			{field:'o_addr_cross',title:'交叉路口',width:300,halign:'center',align:'left',formatter: fun_table_addr_formatter<?=$time?>,
+				editor:{
+					type:'textbox',
+					options:{
+						required : true,
+						buttonIcon:'icon-clear',
+				    	onClickButton:function()
+				        {
+							$(this).textbox('clear');
+				        },
+					}
+				}
+			}
+		]],
+        rowStyler: function(index,row){
+            if (row.act == <?=STAT_ACT_CREATE?>)
+                return 'background:#ffd2d2';
+            if (row.act == <?=STAT_ACT_REMOVE?>)
+                return 'background:#e0e0e0';
+
+        },
+		onBeginEdit: function(index,row)
+		{
+		},
+		onEndEdit: function(index, row, changes)
+		{
+		}
+	});
+
+	if( arr_view<?=$time?>.indexOf('content[org_addr]')>-1 )
+	{
+		$('#table_addr<?=$time?>').edatagrid('disableEditing');
+		$('#table_addr_tool<?=$time?> .oa_op').hide();
+	}
+}
+
+function fun_table_addr_formatter<?=$time?>(value,row,index){
+
+    switch(this.field)
+    {
+
+        default:
+            if(row[this.field+'_s'])
+                value = row[this.field+'_s'];
+    }
+
+    if( ! value ) value = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ;
+    return '<span id="table_addr<?=$time?>_'+index+'_'+this.field+'" class="table_addr<?=$time?>" >'+value+'</span>';
+}
+
+
+//收货信息--操作
+function fun_table_addr_operate<?=$time?>(btn)
+{
+	switch(btn)
+	{
+		case 'add':
+
+			var op_id = get_guid();
+			$('#table_addr<?=$time?>').edatagrid('addRow',{
+				index:0,
+				row:{
+					o_addr_id: op_id
+				}
+			});
+
+			break;
+		case 'del':
+
+			var op_list=$('#table_addr<?=$time?>').datagrid('getChecked');
+
+			var row_s = $('#table_addr<?=$time?>').datagrid('getSelected');
+			var index_s = $('#table_addr<?=$time?>').datagrid('getRowIndex',row_s);
+
+			if($('#table_addr<?=$time?>').datagrid('validateRow',index_s))
+			{
+				$('#table_addr<?=$time?>').datagrid('endEdit',index_s);
+			}
+			else
+			{
+				$('#table_addr<?=$time?>').datagrid('cancelEdit',index_s);
+			}
+
+			for(var i=op_list.length-1;i>-1;i--)
+			{
+				var index = $('#table_addr<?=$time?>').datagrid('getRowIndex',op_list[i]);
+				$('#table_addr<?=$time?>').datagrid('deleteRow',index);
+			}
+
+			break;
+	}
+}
+
+//账户信息--载入
+function load_table_account<?=$time?>()
+{
+	$('#table_account<?=$time?>').edatagrid({
+		width:'100%',
+		height:'150',
+		toolbar:'#table_account_tool<?=$time?>',
+		singleSelect:true,
+		selectOnCheck:false,
+		checkOnSelect:false,
+		striped:true,
+		idField:'oacc_id',
+		data: [],
+		destroyMsg:{
+			norecord:{    // 在没有记录选择的时候执行
+				title:'警告',
+				msg:'没有选择要删除的行！'
+			},
+			confirm:{       // 在选择一行的时候执行
+				title:'确认',
+				msg:'确定要删除此行吗?'
+			}
+		},
+		columns:[[
+			{field:'oacc_id',title:'',width:50,align:'center',checkbox:true},
+			{field:'oacc_bank',title:'开户行',width:450,halign:'center',align:'left',formatter:fun_table_account_formatter<?=$time?>,
+				editor:{
+					type:'textbox',
+					options:{
+						required : true,
+						buttonIcon:'icon-clear',
+				    	onClickButton:function()
+				        {
+							$(this).textbox('clear');
+				        },
+					}
+				}
+			},
+			{field:'oacc_account',title:'账户',width:300,halign:'center',align:'left',formatter:fun_table_account_formatter<?=$time?>,
+				editor:{
+					type:'textbox',
+					options:{
+						required : true,
+						buttonIcon:'icon-clear',
+				    	onClickButton:function()
+				        {
+							$(this).textbox('clear');
+				        },
+					}
+				}
+			}
+		]],
+        rowStyler: function(index,row){
+            if (row.act == <?=STAT_ACT_CREATE?>)
+                return 'background:#ffd2d2';
+            if (row.act == <?=STAT_ACT_REMOVE?>)
+                return 'background:#e0e0e0';
+
+        },
+		onBeginEdit: function(index,row)
+		{
+		},
+		onEndEdit: function(index, row, changes)
+		{
+		}
+	});
+
+	if( arr_view<?=$time?>.indexOf('content[org_account]')>-1 )
+	{
+		$('#table_account<?=$time?>').edatagrid('disableEditing');
+		$('#table_account_tool<?=$time?> .oa_op').hide();
+	}
+}
+function fun_table_account_formatter<?=$time?>(value,row,index){
+
+    switch(this.field)
+    {
+
+        default:
+            if(row[this.field+'_s'])
+                value = row[this.field+'_s'];
+    }
+
+    if( ! value ) value = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' ;
+    return '<span id="table_account<?=$time?>_'+index+'_'+this.field+'" class="table_account<?=$time?>" >'+value+'</span>';
+}
+
+//账户信息--操作
+function fun_table_account_operate<?=$time?>(btn)
+{
+	switch(btn)
+	{
+		case 'add':
+			
+			var op_id = get_guid();
+			$('#table_account<?=$time?>').edatagrid('addRow',{
+				index:0,
+				row:{
+					oacc_id: op_id
+				}
+			});
+
+			break;
+		case 'del':
+
+			var op_list=$('#table_account<?=$time?>').datagrid('getChecked');
+
+			var row_s = $('#table_account<?=$time?>').datagrid('getSelected');
+			var index_s = $('#table_account<?=$time?>').datagrid('getRowIndex',row_s);
+
+			if($('#table_account<?=$time?>').datagrid('validateRow',index_s))
+			{
+				$('#table_account<?=$time?>').datagrid('endEdit',index_s);
+			}
+			else
+			{
+				$('#table_account<?=$time?>').datagrid('cancelEdit',index_s);
+			}
+
+			for(var i=op_list.length-1;i>-1;i--)
+			{
+				var index = $('#table_account<?=$time?>').datagrid('getRowIndex',op_list[i]);
+				$('#table_account<?=$time?>').datagrid('deleteRow',index);
+			}
+
+			break;
+	}
+}
+
+</script>

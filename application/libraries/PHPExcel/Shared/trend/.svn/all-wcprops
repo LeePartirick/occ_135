@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Shared/trend
+END
+logarithmicBestFitClass.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Shared/trend/logarithmicBestFitClass.php
+END
+polynomialBestFitClass.php
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Shared/trend/polynomialBestFitClass.php
+END
+exponentialBestFitClass.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Shared/trend/exponentialBestFitClass.php
+END
+linearBestFitClass.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Shared/trend/linearBestFitClass.php
+END
+trendClass.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Shared/trend/trendClass.php
+END
+powerBestFitClass.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Shared/trend/powerBestFitClass.php
+END
+bestFitClass.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Shared/trend/bestFitClass.php
+END

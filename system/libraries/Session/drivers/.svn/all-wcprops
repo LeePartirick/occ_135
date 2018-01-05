@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/php/!svn/ver/5/oa_135/system/libraries/Session/drivers
+END
+Session_files_driver.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/php/!svn/ver/5/oa_135/system/libraries/Session/drivers/Session_files_driver.php
+END
+Session_database_driver.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/php/!svn/ver/5/oa_135/system/libraries/Session/drivers/Session_database_driver.php
+END
+Session_memcached_driver.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/php/!svn/ver/5/oa_135/system/libraries/Session/drivers/Session_memcached_driver.php
+END
+Session_redis_driver.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/php/!svn/ver/5/oa_135/system/libraries/Session/drivers/Session_redis_driver.php
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/php/!svn/ver/5/oa_135/system/libraries/Session/drivers/index.html
+END

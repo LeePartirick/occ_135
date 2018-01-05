@@ -1,0 +1,557 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+/**
+ * 
+ * 设备清单明细
+ * @author 朱明
+ *
+ */
+class Eli extends CI_Controller {
+
+	
+	public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('proc_gfc/m_eli');
+        $this->load->model('proc_gfc/m_proc_gfc');
+    }
+    
+	public function _remap($method, $params = array())
+	{
+	    if (method_exists($this, $method))
+	    {
+	        return call_user_func_array(array($this, $method), $params);
+	    }
+	    
+	    redirect('base/main/show_404');
+	}
+	
+	/**
+	 * 索引
+	 */
+	public function index()
+	{
+		/************变量初始化****************/
+		$data_out=array();//输出数组
+		$arr_view=array();//视图数组
+		$data_post=array();//输出数组
+		
+		/************变量赋值*****************/
+		$data_get= trim_array($this->uri->uri_to_assoc(4));
+		
+		/************事件处理*****************/
+		
+		/************模板赋值***********/
+		$data_out['flag_select']=element('flag_select', $data_get);
+		$data_out['fun_select']=element('fun_select', $data_get);
+		
+		$data_out['fun_open']=element('fun_open', $data_get);
+		$data_out['fun_open_id']=element('fun_open_id', $data_get);
+		
+		$data_out['title']='设备清单明细索引';
+		$data_out['time']=time();
+		if( ! empty(element('time', $data_get)) )
+		$data_out['time']=element('time', $data_get);
+		
+		$data_out['url']='proc_gfc-eli-index';
+		
+		$data_out['field_search_start']='eli_name';
+		$data_out['field_search_rule_default']='{"field":"eli_name","field_r":"eli_name","field_s":"设备名称","table":"pm_eq_list_item","value":"","rule":"like","group":"search","editor":"text"}';
+		$data_out['field_search_rule']='
+		{"id":"eli_name","text":"设备名称","rule":{"field":"pm_eq_list_item","field_r":"eli_name","field_s":"设备名称","table":"pm_eq_list_item","value":"'.element('eli_name',$data_get).'","rule":"like","group":"search","editor":"text"}}
+		';
+		
+		$data_out['field_search_value_dispaly']= array(
+		);
+		$data_out['field_search_value_dispaly']=json_encode($data_out['field_search_value_dispaly']);
+		
+		$data_out=$this->m_base->get_person_conf_index($data_out);
+		
+		/************载入视图 ****************/
+		$arr_view[]='proc_gfc/eli/index';
+		$arr_view[]='proc_gfc/eli/index_js';
+		$this->m_view->load_view($arr_view,$data_out);
+	}
+	
+	/**
+	 * json
+	 */
+	public function get_json()
+	{
+		//判断是否ajax请求
+		$is_ajax=$this->input->is_ajax_request();
+		if( ! $is_ajax) exit;
+
+		/************变量初始化****************/
+		//开始时间
+		$time_start=time();
+
+		$arr_search=array();
+		$data_search=array();
+
+		$rows = '';
+		$json = '';
+		$msg  = '';
+
+		/************变量赋值*****************/
+		$data_get= trim_array($this->uri->uri_to_assoc(4));
+
+		$data_search=$this->input->post_get('data_search');
+		if( ! empty($data_search))
+		{
+			$data_search=json_decode($data_search,TRUE);
+		}
+
+		//查询参数
+		$query=trim($this->input->post_get('query'));
+		$field_q=trim($this->input->post_get('field_q'));
+		$field_s=trim($this->input->post_get('field_s'));
+
+		//分页
+		$arr_search['page']=$this->input->post_get('page');
+		$arr_search['rows']=$this->input->post_get('rows');
+
+		if( empty($arr_search['rows']) )
+		{
+			$arr_search['rows'] = 200;
+		}
+
+		//排序
+		$arr_search['order']=$this->input->post_get('order');
+		$arr_search['sort']=$this->input->post_get('sort');
+
+		if( empty($arr_search['sort']) )
+		{
+			$arr_search['sort']='db_time_create';
+			$arr_search['order']='desc';
+		}
+
+		$arr_search['where']='';
+		$arr_search['value']=array();
+		/************查询条件*****************/
+
+		if( $query )
+		{
+			if( ! $field_q ) $field_q="bp_time";
+
+			if( ! $field_s ) $field_s=$field_q;
+
+			$arr_search['where'].=" AND CONCAT({$field_q}) like '%".$this->m_base->escape_like_str($query)."%'";
+		}
+
+		$arr_search=$this->m_base->get_where_of_data_search($data_search,$arr_search);
+		/************数据查询*****************/
+		$arr_field_search=array(
+			'eli_eq_id',
+			'eli_name',
+			'eli_brand',
+			'eli_model',
+			'eli_unit',
+			'eli_description',
+			'eli_parameter',
+			'eli_maintenance',
+		
+			'eli_sum',
+			'eli_sum_total',
+			'eli_sum_total_have',
+			'eli_count',
+			'eli_count_have',
+			
+			'eli_sub',
+			'eli_c_pr',
+			'eli_gfc_id',
+		
+			'eli_note',
+		);
+
+		if($query)
+		{
+			$arr_field_search = explode(',', $field_s);
+		}
+		
+		$arr_field_search[]='eli_id';
+
+		$arr_search['field']=implode(',', $arr_field_search);
+
+		$arr_search['from']='pm_eq_list_item';
+
+		$rs=$this->m_db->query($arr_search);
+
+		/************json拼接****************/
+
+		if (count($rs['content']) > 0)
+		{
+			foreach($rs['content'] as $k => $v)
+			{
+				$row_f='';
+
+				foreach ($arr_field_search as $f) {
+					switch($f){
+						default:
+							if(isset($GLOBALS['m_eli']['text'][$f]) && isset($GLOBALS['m_eli']['text'][$f][$v[$f]]) )
+								$v[$f]=$GLOBALS['m_eli']['text'][$f][$v[$f]];
+					}
+
+					$row_f.='"'.$f.'":"'.fun_urlencode(element($f,$v)).'",';
+				}
+				$row_f=trim($row_f,',');
+
+				if( $query )
+				{
+					$tmp_arr=explode(',', $field_q);
+
+					$value_s='';
+					foreach ($tmp_arr as $v1) {
+						$value_s.=element($v1,$v).',';
+					}
+
+					$rows.='{"value":"'.trim($value_s,',').'",'
+						.'"data": {'.$row_f.'}},';
+
+				}
+				else
+				{
+					$rows.='{'.$row_f.'},';
+				}
+			}
+			$rows=trim($rows,',');
+		}
+
+		//结束时间
+		$time_end=time();
+		$time=$time_end-$time_start;
+
+		if( $query )
+		{
+			$json.='{"query": "'.$query.'","suggestions":['.$rows.']}';
+		}
+		else
+		{
+			$json.='{"total":"'.$rs['total'].'"'
+				.',"time":"'.$time.'"'
+				.',"title":"设备清单明细索引"'
+				.',"msg":"'.$msg.'"'
+				.',"rows":['.$rows.']}';
+		}
+
+		/************返回数据*****************/
+		echo $json;
+	}
+	
+	/**
+	 * 
+	 * 编辑
+	 */
+	public function edit()
+	{
+		$this->m_eli->load();
+	}
+	
+	/**
+	 * 
+	 * 导入
+	 */
+	public function import()
+	{
+		/************载入模型*****************/
+		$this->load->model('base/m_excel');
+		
+		/************变量初始化****************/
+		$arr_view = array();//视图数组
+		$data_post= array();//$POST数组
+		$data_get = array();//$GET 数组
+		$data_out = array();//输出数组
+		$data_db  = array();//数据库数据
+		
+		$data_save=array();//数据库保存数组
+		$arr_search=array();
+		$rtn=array();
+		$rtn['rs']=TRUE;
+		
+		$time_start=time();
+		
+		/************变量赋值*****************/
+		$data_get= trim_array($this->uri->uri_to_assoc(4));
+		$id=element('id', $data_get);
+		
+		$row='';
+		$msg_err = $this->input->post('msg_err');
+		$num_import = $this->input->post('num_import');
+		$row_num = $this->input->post('row_num');
+		$sheet_num  = $this->input->post('sheet_num');
+		if( ! $sheet_num ) $sheet_num = 1;
+
+		$rtn_data = array();
+		/************数据处理 *****************/
+		
+		if($row_num)
+		{
+			$path_xlsx=str_replace('\\', '/', APPPATH).'upload/'.$id.'.xlsx';
+			//xlsx文件是否存在
+			if( ! file_exists($path_xlsx) )
+			exit;
+			
+			//读取列定义
+			$reader = IOFactory::createReader('Excel2007'); 
+			$PHPExcel = $reader->load($path_xlsx); 
+			$sheet = $PHPExcel->getSheet($sheet_num - 1);
+			
+			$check_empty=0;
+			
+			//@todo 导入列
+			$col = array(
+				'eli_brand',
+				'eli_name',
+				'eli_model',
+				'eli_parameter',
+				'eli_count',
+				'eli_sum',
+				'eli_sum_total',
+				'eli_maintenance',
+				'eli_sub',
+	    	);
+			
+			while (TRUE)
+			{
+				$arr_get=array();
+				$arr_post=array();
+				$arr_post['btn']='save';
+				$arr_post['flag_more']=TRUE;
+				$check_empty=0;
+				
+				$col_num=0;
+				foreach ($col as $v) {
+					
+					$value = $sheet->getCellByColumnAndRow($col_num, $row_num)->getValue();
+					if( empty($value) )
+					{
+						$check_empty++;
+					}
+					
+					switch ($v) {
+						case 'eli_supply_org':
+							$arr_post['content'][$v.'_s'] = $value;
+							$value = $this->m_base->get_field_where('sys_org','o_id_standard'," AND o_name = '{$value}' ");
+							break;
+						case 'eli_sub':
+							$arr_post['content'][$v.'_s'] = $value;
+							$value = $this->m_base->get_field_where('fm_subject','sub_id'," AND sub_name = '{$value}' AND FIND_IN_SET('{$sheet_num}',sub_tag)");
+							break;
+					}
+					
+					$arr_post['content'][$v] = $value;
+					$col_num++;
+				}
+				
+//				if($sheet_num != 2)
+				{
+					if( empty(element('eli_sum_total', $arr_post['content'])) 
+					 && ! empty(element('eli_count', $arr_post['content'])) 
+					 && ! empty(element('eli_sum', $arr_post['content'])) 
+					)
+					{
+						$arr_post['content']['eli_sum_total'] =  $arr_post['content']['eli_sum']*$arr_post['content']['eli_count'];
+					}
+				}
+				
+				$arr_post['content']['eli_type'] = $sheet_num;
+				
+				$arr_post['btn']='save';
+				$arr_get['fun_no_db'] = element('fun_no_db', $data_get);
+				
+				$arr_rtn=$this->m_eli->load($arr_get,$arr_post);
+				
+				if( ! element('rtn', $arr_rtn) )
+				{
+					switch ($sheet_num)
+					{
+						case '1':
+							$msg_err.='设备采购';
+							break;
+						case '2':
+							$msg_err.='零星采购';
+							break;
+						case '3':
+							$msg_err.='分包采购';
+							break;
+					}
+					
+					$msg_err.='第'.$row_num.'行,导入失败！错误为:<br/>'.element('msg_err',$arr_rtn).'<br/>';
+				}
+				else 
+				{
+					$arr_post['content']['eli_id'] = get_guid();
+					$rtn_data[] = $arr_post['content'];
+					$num_import++;
+				}
+				
+				//读取完成
+				if( $check_empty == count($col) )
+				{
+					if( $sheet_num == 3)
+					{
+						@unlink($path_xlsx);
+						$rtn['rs']=TRUE;
+						$rtn['row_num']=$row_num;
+						$rtn['num_import']=$num_import;
+						$rtn['msg_err']=$msg_err;
+						$rtn['sheet_num']=$sheet_num;
+						$rtn['rtn_data']=json_encode($rtn_data);
+						echo json_encode($rtn);
+						exit;
+					}
+					else 
+					{
+						$sheet_num ++ ;
+						$row_num = 1;
+						$sheet = $PHPExcel->getSheet($sheet_num - 1);
+						
+						if($sheet_num == 3)
+						{
+							$col = array(
+								'eli_supply_org',
+								'eli_name',
+								'eli_parameter',
+								'eli_count',
+								'eli_sum',
+								'eli_sum_total',
+								'eli_maintenance',
+								'eli_maintenance_start',
+								'eli_sub',
+					    	);
+						}
+					}
+				}
+				
+				//防止超时
+				$time_end=time();
+				
+				if( $time_end-$time_start > 15 )
+				{
+					$rtn['rs']=FALSE;
+					$rtn['row_num']=$row_num;
+					$rtn['num_import']=$num_import;
+					$rtn['msg_err']=$msg_err;
+					$rtn['sheet_num ']=$sheet_num;
+					$rtn['rtn_data']=json_encode($rtn_data);
+					echo json_encode($rtn);
+					exit;
+				}
+					
+				$row_num++;
+			}
+			
+			@unlink($path_xlsx);
+			
+			$rtn['rs']=TRUE;
+			$rtn['row_num']=$row_num;
+			$rtn['num_import']=$num_import;
+			$rtn['msg_err']=$msg_err;
+			
+			echo json_encode($rtn);
+			exit;
+		}
+		
+		/************模板载入 *****************/
+		$data_out['time']=time();
+		$data_out['id']=$id;
+		$data_out['url']=uri_string();
+		$data_out['title']='设备清单明细';
+		$data_out['fun_no_db']=element('fun_no_db', $data_get);
+		$data_out['f_id']=element('f_id', $data_get);
+		/************载入视图 ****************/
+//		$arr_view[]='base/fun/win_import';
+//		$arr_view[]='base/fun/win_import_js';
+		$arr_view[]='proc_gfc/eli/win_import';
+		$arr_view[]='proc_gfc/eli/win_import_js';
+		$this->m_view->load_view($arr_view,$data_out);
+	}
+	
+	/**
+	 * 
+	 * 批量操作
+	 */
+	public function fun_operate_more()
+	{
+		/************变量初始化****************/
+		$arr_view = array();//视图数组
+		$data_post= array();//$POST数组
+		$data_get = array();//$GET 数组
+		$data_out = array();//输出数组
+		$data_db  = array();//数据库数据
+		
+		$data_save=array();//数据库保存数组
+		$arr_search=array();
+		$data_out['op_disable']=array();
+		
+		/************变量赋值*****************/
+		$data_get= trim_array($this->uri->uri_to_assoc(4));
+		
+		$btn=$this->input->post('btn');
+		$list=$this->input->post('list');
+		$msg_err=$this->input->post('msg_err');
+		$json_save=$this->input->post('json_save');
+		
+		$arr_save = array();
+		
+		if($json_save)
+		$arr_save = json_decode($json_save,TRUE);
+		
+		$time_start=time();
+		/************处理事件*****************/
+		
+		$list=explode(',', $list);
+		
+		if(count($list) > 0)
+		{
+		
+			foreach ($list as $k => $v) {
+					
+				$arr_get=array();
+				
+				$arr_get['eli_id']=$v;
+				$arr_get['act']=STAT_ACT_EDIT;
+				$arr_post=array();
+				$arr_post['btn']=$btn;
+				$arr_post['flag_more']=TRUE;
+				$arr_post['content']=array();
+				
+				$arr_post= array_merge($arr_post,$arr_save);
+				
+				$arr_rtn=$this->m_eli->load($arr_get,$arr_post);
+				if( ! isset($arr_rtn['rtn']) )
+				$arr_rtn['rtn'] = $arr_rtn['result'];
+				
+				if( ! $arr_rtn['rtn'] )
+				{
+					$msg_err.='执行失败！错误为:<br/>'.$arr_rtn['msg_err'].'<br/>';
+				}
+					
+				unset($list[$k]);
+				
+				//防止超时
+				$time_end=time();
+				
+				if( $time_end-$time_start > 5 )
+				{
+			
+					$rtn['rs']=FALSE;
+					$rtn['list']=implode(',', $list);
+					$rtn['msg_err']=$msg_err;
+					echo json_encode($rtn);;
+					exit;
+				}
+			}
+		}
+		
+		$rtn['rs']=TRUE;
+		$rtn['list']=array();
+		$rtn['msg_err']=$msg_err;
+			
+		/************返回结果 *****************/
+		echo json_encode($rtn);;
+		exit;
+		
+	}
+	
+}

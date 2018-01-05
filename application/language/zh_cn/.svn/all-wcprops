@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn
+END
+number_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/number_lang.php
+END
+calendar_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/calendar_lang.php
+END
+error_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/error_lang.php
+END
+ftp_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/ftp_lang.php
+END
+migration_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/migration_lang.php
+END
+date_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/date_lang.php
+END
+form_validation_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/form_validation_lang.php
+END
+unit_test_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/unit_test_lang.php
+END
+profiler_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/profiler_lang.php
+END
+imglib_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/imglib_lang.php
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/index.html
+END
+upload_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/upload_lang.php
+END
+db_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/db_lang.php
+END
+email_lang.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/php/!svn/ver/8/oa_135/application/language/zh_cn/email_lang.php
+END

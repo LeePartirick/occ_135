@@ -1,0 +1,23 @@
+<?php 
+defined('BASEPATH') OR exit('No direct script access allowed'); 
+ 
+$config['sys_org_account'] = array( 
+  'table_name_show'=>'机构银行卡', 
+  'table_note'=>'', 
+  'fields'=>array( 
+    'oacc_id'=> array('type'=>'VARCHAR','constraint'=>'40','comment'=>'主键',), 
+    'db_time_update'=> array('type'=>'DATETIME','constraint'=>'','comment'=>'数据更新时间','null'=>TRUE,), 
+    'db_time_create'=> array('type'=>'DATETIME','constraint'=>'','comment'=>'创建时间','null'=>TRUE,), 
+    'db_person_create'=> array('type'=>'VARCHAR','constraint'=>'40','comment'=>'创建人','null'=>TRUE,), 
+    'oacc_bank'=> array('type'=>'VARCHAR','constraint'=>'200','comment'=>'开户行','null'=>TRUE,), 
+    'oacc_account'=> array('type'=>'VARCHAR','constraint'=>'100','comment'=>'账户','null'=>TRUE,), 
+    'o_id'=> array('type'=>'VARCHAR','constraint'=>'40','null'=>TRUE,), 
+  ),  
+  'primary_key'=>array( 
+    'oacc_id', 
+  ),  
+  'fields_index'=>array(),
+  'fields_add'=>array(), 
+  'fields_modify'=>array(), 
+  'fields_drop'=>array(), 
+);  

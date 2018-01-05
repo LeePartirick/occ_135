@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/php/!svn/ver/707/oa_135/application/models/proc_bud
+END
+M_proc_bud.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/php/!svn/ver/588/oa_135/application/models/proc_bud/M_proc_bud.php
+END
+M_invoice_type.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/php/!svn/ver/677/oa_135/application/models/proc_bud/M_invoice_type.php
+END
+M_subject.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/php/!svn/ver/707/oa_135/application/models/proc_bud/M_subject.php
+END
+M_budi.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/php/!svn/ver/550/oa_135/application/models/proc_bud/M_budi.php
+END
+M_budm.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/php/!svn/ver/588/oa_135/application/models/proc_bud/M_budm.php
+END
+M_bl_ppo.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/php/!svn/ver/707/oa_135/application/models/proc_bud/M_bl_ppo.php
+END
+M_tax.php
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/php/!svn/ver/677/oa_135/application/models/proc_bud/M_tax.php
+END

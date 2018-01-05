@@ -1,0 +1,333 @@
+/* 设置*/
+.icon-tool{
+    background: url('../img/icon/icon_tool.png')  no-repeat center center;
+}
+
+/* 工具*/
+.icon-tool2{
+    background: url('../img/icon/icon_tool2.png')  no-repeat center center;
+}
+
+/* 表格*/
+.icon-table{
+    background: url('../img/icon/icon_table.png')  no-repeat center center;
+}
+
+/* 退出*/
+.icon-login_out{
+    background: url('../img/icon/icon_login_out.png')  no-repeat center center;
+}
+
+/* 插入*/
+.icon-inset{
+    background: url('../img/icon/icon_inset.png')  no-repeat center center;
+}
+
+/* 主键*/
+.icon-pk{
+    background: url('../img/icon/icon_pk.png')  no-repeat center center;
+}
+.icon-pk_un{
+    background: url('../img/icon/icon_pk_un.png')  no-repeat center center;
+}
+
+/* 移动*/
+.icon-move{
+    background: url('../img/icon/icon_move.png')  no-repeat center center;
+}
+
+/* 流程*/
+.icon-proc{
+    background: url('../img/icon/icon_proc.png')  no-repeat center center;
+}
+
+/* 设计*/
+.icon-design{
+    background: url('../img/icon/icon_design.png')  no-repeat center center;
+}
+
+/* 操作日志*/
+.icon-log{
+    background: url('../img/icon/icon_log.png')  no-repeat center center;
+}
+
+/* 类型*/
+.icon-type{
+    background: url('../img/icon/icon_type.png')  no-repeat center center;
+}
+
+/* xlsx*/
+.icon-xlsx{
+    background: url('../img/icon/icon_xlsx.png')  no-repeat center center;
+}
+
+/* 控件*/
+.icon-kj{
+    background: url('../img/icon/icon_kj.png')  no-repeat center center;
+}
+
+/* 布局*/
+.icon-layout{
+    background: url('../img/icon/icon_layout.png')  no-repeat center center;
+}
+
+/* 面板*/
+.icon-panel{
+    background: url('../img/icon/icon_panel.png')  no-repeat center center;
+}
+
+/* 标签*/
+.icon-tabs{
+    background: url('../img/icon/icon_tabs.png')  no-repeat center center;
+}
+
+/* 分类*/
+.icon-accordion{
+    background: url('../img/icon/icon_accordion.png')  no-repeat center center;
+}
+
+/* 表单*/
+.icon-form{
+    background: url('../img/icon/icon_form.png')  no-repeat center center;
+}
+
+/* 树*/
+.icon-tree{
+    background: url('../img/icon/icon_tree.png')  no-repeat center center;
+}
+
+/* 数据库*/
+.icon-db{
+    background: url('../img/icon/icon_db.png')  no-repeat center center;
+}
+
+/* 按钮*/
+.icon-btn{
+    background: url('../img/icon/icon_btn.png')  no-repeat center center;
+}
+
+/* 链接*/
+.icon-link{
+    background: url('../img/icon/icon_link.png')  no-repeat center center;
+}
+
+/* 组合*/
+.icon-merge{
+    background: url('../img/icon/icon_merge.png')  no-repeat center center;
+}
+
+/* email*/
+.icon-email{
+    background: url('../img/icon/icon_email.png')  no-repeat center center;
+}
+
+/* 索引*/
+.icon-index{
+    background: url('../img/icon/icon_index.png')  no-repeat center center;
+}
+
+/* 输入*/
+.icon-input{
+    background: url('../img/icon/icon_input.png')  no-repeat center center;
+}
+
+/* 代码*/
+.icon-code{
+    background: url('../img/icon/icon_code.png')  no-repeat center center;
+}
+
+/* 最大化*/
+.icon-win_max{
+    background: url('../img/icon/icon_win_max.png')  no-repeat center center;
+}
+
+/* 下一步*/
+.icon-next{
+    background: url('../img/icon/icon_next.png')  no-repeat center center;
+}
+
+/* 下一步*/
+.icon-pnext{
+    background: url('../img/icon/icon_pnext.png')  no-repeat center center;
+}
+
+/* 权限*/
+.icon-acl{
+    background: url('../img/icon/icon_acl.png')  no-repeat center center;
+}
+
+/* 日期提醒*/
+.icon-date_alert{
+    background: url('../img/icon/icon_date_alert.png')  no-repeat center center;
+}
+
+.icon-date_no{
+    background: url('../img/icon/icon_date_no.png')  no-repeat center center;
+}
+
+/* 任务*/
+.icon-task{
+    background: url('../img/icon/icon_task.png')  no-repeat center center;
+}
+
+/* 下载*/
+.icon-download{
+    background: url('../img/icon/icon_download.png')  no-repeat center center;
+}
+
+/* 事件*/
+.icon-event{
+    background: url('../img/icon/icon_event.png')  no-repeat center center;
+}
+
+/* 图片*/
+.icon-img{
+    background: url('../img/icon/icon_img.png')  no-repeat center center;
+}
+
+/* +*/
+.icon-add_m{
+    background: url('../img/icon/icon_add_m.png')  no-repeat center center;
+}
+
+/* -*/
+.icon-remove_m{
+    background: url('../img/icon/icon_remove_m.png')  no-repeat center center;
+}
+
+/* text*/
+.icon-text{
+    background: url('../img/icon/icon_text.png')  no-repeat center center;
+}
+
+/* import*/
+.icon-import{
+    background: url('../img/icon/icon_import.png')  no-repeat center center;
+}
+
+/* 素材*/
+.icon-sc{
+    background: url('../img/icon/icon_sc.png')  no-repeat center center;
+}
+
+/* 上传*/
+.icon-upload{
+    background: url('../img/icon/icon_upload.png')  no-repeat center center;
+}
+
+/* 清扫*/
+.icon-clean{
+    background: url('../img/icon/icon_clean.png')  no-repeat center center;
+}
+
+/* 主页*/
+.icon-home{
+    background: url('../img/icon/icon_home.png')  no-repeat center center;
+}
+
+/* 导航*/
+.icon-dl{
+    background: url('../img/icon/icon_dl.png')  no-repeat center center;
+}
+
+/* 移交*/
+.icon-yj{
+    background: url('../img/icon/icon_yj.png')  no-repeat center center;
+}
+
+/* 百分比*/
+.icon-per{
+    background: url('../img/icon/icon_per.png')  no-repeat center center;
+}
+
+/* css*/
+.icon-css{
+    background: url('../img/icon/icon_css.png')  no-repeat center center;
+}
+
+/* 计算*/
+.icon-count{
+    background: url('../img/icon/icon_count.png')  no-repeat center center;
+}
+
+/* 隐藏*/
+.icon-hide{
+    background: url('../img/icon/icon_hide.png')  no-repeat center center;
+}
+
+/* 截图*/
+.icon-split{
+    background: url('../img/icon/icon_split.png')  no-repeat center center;
+}
+
+/* 二维码*/
+.icon-qr{
+    background: url('../img/icon/icon_qr.png')  no-repeat center center;
+}
+
+.icon-im{
+    background: url('../img/icon/icon_im.png')  no-repeat center center;
+}
+
+.icon-im_gp{
+    background: url('../img/icon/icon_im_gp.png')  no-repeat center center;
+}
+
+.icon-addr{
+    background: url('../img/icon/icon_addr.png')  no-repeat center center;
+}
+
+.icon-im_ol{
+    background: url('../img/icon/icon_im_ol.png')  no-repeat center center;
+}
+.icon-im_ban{
+    background: url('../img/icon/icon_im_ban.png')  no-repeat center center;
+}
+.icon-im_off{
+    background: url('../img/icon/icon_im_off.png')  no-repeat center center;
+}
+.icon-im_leave{
+    background: url('../img/icon/icon_im_leave.png')  no-repeat center center;
+}
+
+.icon-sys_msg{
+    background: url('../img/icon/icon_sys_msg.png')  no-repeat center center;
+}
+.icon-wl{
+    background: url('../img/icon/icon_wl.png')  no-repeat center center;
+}
+
+.icon-care{
+    background: url('../img/icon/icon_care.png')  no-repeat center center;
+}
+.icon-uncare{
+    background: url('../img/icon/icon_uncare.png')  no-repeat center center;
+}
+
+.icon-dang{
+    background: url('../img/icon/icon_dang.png')  no-repeat center center;
+}
+.icon-tuan{
+    background: url('../img/icon/icon_tuan.png')  no-repeat center center;
+}
+
+.icon-history{
+    background: url('../img/icon/icon_history.png')  no-repeat center center;
+}
+
+.icon-sort{
+    background: url('../img/icon/icon_sort.png')  no-repeat center center;
+}
+
+/* 静音*/
+.icon-mute{
+	background: url('../img/icon/mute_icons.png') no-repeat center center;
+}
+/* 提醒*/
+.icon-prompt{
+	background: url('../img/icon/prompt_icons.png') no-repeat center center;
+}
+
+.icon-file{
+	background: url('../js/easyui/themes/black/images/tree_icons.png') no-repeat -240px 0;
+}

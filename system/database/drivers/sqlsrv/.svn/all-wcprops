@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/sqlsrv
+END
+sqlsrv_forge.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/sqlsrv/sqlsrv_forge.php
+END
+sqlsrv_utility.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/sqlsrv/sqlsrv_utility.php
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/sqlsrv/index.html
+END
+sqlsrv_driver.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/sqlsrv/sqlsrv_driver.php
+END
+sqlsrv_result.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/sqlsrv/sqlsrv_result.php
+END

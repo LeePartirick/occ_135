@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/ibase
+END
+ibase_driver.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/ibase/ibase_driver.php
+END
+ibase_result.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/ibase/ibase_result.php
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/ibase/index.html
+END
+ibase_forge.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/ibase/ibase_forge.php
+END
+ibase_utility.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/php/!svn/ver/5/oa_135/system/database/drivers/ibase/ibase_utility.php
+END

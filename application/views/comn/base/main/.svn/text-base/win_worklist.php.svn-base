@@ -1,0 +1,1 @@
+<table id="table_wl_comment<?=$time?>"></table>

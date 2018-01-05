@@ -1,0 +1,3113 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+/**
+ * 
+ *  
+    财务编号
+ */
+class M_gfc extends CI_Model {
+	
+	//@todo 主表配置
+	private $table_name='pm_given_financial_code';
+	private $pk_id='gfc_id';
+	private $table_form;
+	private $arr_table_form=array();
+	private $title='财务编号';
+	private $model_name = 'm_gfc';
+	private $url_conf = 'proc_gfc/gfc/edit';
+	private $proc_id = 'proc_gfc';
+	
+ 	public function __construct()
+    {
+        // Call the CI_Model constructor
+        parent::__construct();
+        $this->m_define();
+        
+         //读取表结构
+        $this->config->load('db_table/'.$this->table_name, FALSE,TRUE);
+        $this->table_form=$this->config->item($this->table_name);
+        
+        $this->load->model('proc_bud/m_budm');
+        $this->load->model('proc_gfc/m_gfc_secret');
+        $this->load->model('proc_file/m_file_type');
+        
+    }
+    
+	/**
+     * 
+     * 定义
+     */
+	public function m_define()
+    {
+    	//@todo 定义
+    	if( defined('LOAD_M_GFC') ) return;
+    	define('LOAD_M_GFC', 1);
+    	
+    	//define
+    	
+    	// 节点
+    	define('GFC_PPO_END', 0); // 流程结束
+		define('GFC_PPO_START', 1); // 起始
+    	define('GFC_PPO_REVIEW', 2); // 评审
+    	define('GFC_PPO_CODE', 3); // 生成编号
+    	define('GFC_PPO_UPLOAD', 4); // 合同待归
+    	define('GFC_PPO_RETURN', 5); // 合同审核
+    	$GLOBALS['m_gfc']['text']['ppo']=array(
+    		GFC_PPO_START=>'起始',
+    		GFC_PPO_REVIEW=>'评审',
+    		GFC_PPO_CODE=>'生成编号',
+    		GFC_PPO_UPLOAD=>'合同待归',
+    		GFC_PPO_RETURN=>'合同归还审核',
+    		GFC_PPO_END=>'流程结束',
+    	);
+    	
+    	define('GFC_CATEGORY_MAIN_INTEGRATION', 1);// 集成
+		define('GFC_CATEGORY_MAIN_ARCHITECTURE', 2);// 建筑
+		define('GFC_CATEGORY_MAIN_SERVICE', 3);// 服务
+		define('GFC_CATEGORY_MAIN_SOFTWARE', 4);// 软件->大数据
+		define('GFC_CATEGORY_MAIN_PRODUCT', 5);// 自主产品
+		define('GFC_CATEGORY_MAIN_POLICY', 6);// 政策性
+		
+		define('GFC_CATEGORY_MAIN_INDUSTRIAL_CONTROL', 7);  //工控 Industrial control
+		define('GFC_CATEGORY_MAIN_INTELLIGENCE', 8);  //情报 intelligence
+
+    	$GLOBALS['m_gfc']['text']['gfc_category_main']=array(
+    		GFC_CATEGORY_MAIN_INTEGRATION => '集成',
+			GFC_CATEGORY_MAIN_SERVICE => '服务',
+			GFC_CATEGORY_MAIN_PRODUCT => '产品',
+			GFC_CATEGORY_MAIN_SOFTWARE => '大数据',
+			GFC_CATEGORY_MAIN_ARCHITECTURE => '建筑安装',
+			GFC_CATEGORY_MAIN_POLICY => '政策性',
+			GFC_CATEGORY_MAIN_INDUSTRIAL_CONTROL => '工控',
+			GFC_CATEGORY_MAIN_INTELLIGENCE => '情报',
+    	);
+    	
+    	//项目密级
+    	define('GFC_CATEGORY_SECRET_FM', 0);// 非密
+    	define('GFC_CATEGORY_SECRET_MM', 1);// 秘密
+		define('GFC_CATEGORY_SECRET_JM', 2);// 机密
+
+    	$GLOBALS['m_gfc']['text']['gfc_category_secret']=array(
+    		GFC_CATEGORY_SECRET_FM => '非密',
+			GFC_CATEGORY_SECRET_MM => '秘密',
+			GFC_CATEGORY_SECRET_JM => '机密',
+    	);
+    	
+    	//条线
+		define('GFC_CATEGORY_TIAOXIAN_MAIN_GUO', 1);// 国家
+		define('GFC_CATEGORY_TIAOXIAN_MAIN_SHENG', 2);// 市委办局
+		define('GFC_CATEGORY_TIAOXIAN_MAIN_DI', 3);// 区县委办局
+		define('GFC_CATEGORY_TIAOXIAN_MAIN_QUXIAN', 4);// 区县委办局
+		
+		$GLOBALS['m_gfc']['text']['gfc_category_tiaoxian_main'] = array(
+			GFC_CATEGORY_TIAOXIAN_MAIN_GUO => '国家',
+			GFC_CATEGORY_TIAOXIAN_MAIN_SHENG => '省(直辖市)',
+			GFC_CATEGORY_TIAOXIAN_MAIN_DI => '地(区县)',
+			GFC_CATEGORY_TIAOXIAN_MAIN_QUXIAN => '县(区县)',
+		);
+		
+		//行业
+		define('GFC_CATEGORY_TIAOXIAN_JUNDUI', 1);// 军队
+		define('GFC_CATEGORY_TIAOXIAN_JUNGONG', 2);// 军工
+		define('GFC_CATEGORY_TIAOXIAN_CHENGGUAN', 3);// 城管
+		define('GFC_CATEGORY_TIAOXIAN_ZHENGFU', 4);// 政府委办局
+		define('GFC_CATEGORY_TIAOXIAN_JIAOYU', 5);// 教育
+		define('GFC_CATEGORY_TIAOXIAN_WEISHENG', 6);// 卫生
+		define('GFC_CATEGORY_TIAOXIAN_GONGSHANG', 7);// 工商
+		define('GFC_CATEGORY_TIAOXIAN_CAISHUI', 8);// 财税
+		define('GFC_CATEGORY_TIAOXIAN_GONGAN', 9);// 公安
+		define('GFC_CATEGORY_TIAOXIAN_JIANCHA', 10);// 检察院
+		define('GFC_CATEGORY_TIAOXIAN_FAYUAN', 11);// 法院
+		define('GFC_CATEGORY_TIAOXIAN_QIYE', 12);// 企业
+		define('GFC_CATEGORY_TIAOXIAN_FENBAO', 13);// 分包合作
+		define('GFC_CATEGORY_TIAOXIAN_JINRONG', 14);// 金融保险证券
+		define('GFC_CATEGORY_TIAOXIAN_JIEDAO', 15);// 街道
+		define('GFC_CATEGORY_TIAOXIAN_ZUZHIBU', 16);// 组织部
+		define('GFC_CATEGORY_TIAOXIAN_QITA', 17);// 其他
+		define('GFC_CATEGORY_TIAOXIAN_JIANYU', 18);// 监狱
+		define('GFC_CATEGORY_TIAOXIAN_SIFA', 19);// 司法
+		define('GFC_CATEGORY_TIAOXIAN_NENGYUAN', 20);// 能源
+		define('GFC_CATEGORY_TIAOXIAN_YANCAO', 21);// 烟草
+		define('GFC_CATEGORY_TIAOXIAN_SHIHUA', 22);// 石化
+		define('GFC_CATEGORY_TIAOXIAN_DIANLI', 23);// 电力
+		define('GFC_CATEGORY_TIAOXIAN_GANGTIE', 24);// 钢铁
+		define('GFC_CATEGORY_TIAOXIAN_GUIJIAO', 25);// 轨交
+		
+		$GLOBALS['m_gfc']['text']['gfc_category_tiaoxian'] = array(
+			GFC_CATEGORY_TIAOXIAN_YANCAO => '烟草',
+			GFC_CATEGORY_TIAOXIAN_SHIHUA => '石化',
+			GFC_CATEGORY_TIAOXIAN_DIANLI => '电力',
+			GFC_CATEGORY_TIAOXIAN_GANGTIE => '钢铁',
+			GFC_CATEGORY_TIAOXIAN_GUIJIAO => '轨交',
+			GFC_CATEGORY_TIAOXIAN_ZHENGFU => '政府委办局',
+			GFC_CATEGORY_TIAOXIAN_GONGAN => '公安',
+			GFC_CATEGORY_TIAOXIAN_JIANCHA => '检察院',
+			GFC_CATEGORY_TIAOXIAN_FAYUAN => '法院',
+			GFC_CATEGORY_TIAOXIAN_JIANYU => '监狱',
+			GFC_CATEGORY_TIAOXIAN_SIFA => '司法',
+			GFC_CATEGORY_TIAOXIAN_CHENGGUAN => '城管',
+			GFC_CATEGORY_TIAOXIAN_WEISHENG => '卫生',
+			GFC_CATEGORY_TIAOXIAN_JIAOYU => '教育',
+			GFC_CATEGORY_TIAOXIAN_JUNDUI => '军队',
+			GFC_CATEGORY_TIAOXIAN_JUNGONG => '军工',
+			GFC_CATEGORY_TIAOXIAN_GONGSHANG => '工商',
+			GFC_CATEGORY_TIAOXIAN_CAISHUI => '财税',
+			GFC_CATEGORY_TIAOXIAN_JINRONG => '金融保险证券',
+			GFC_CATEGORY_TIAOXIAN_NENGYUAN => '能源',
+			GFC_CATEGORY_TIAOXIAN_QIYE => '企业',
+			GFC_CATEGORY_TIAOXIAN_JIEDAO => '街道',
+			GFC_CATEGORY_TIAOXIAN_ZUZHIBU => '组织部',
+			GFC_CATEGORY_TIAOXIAN_QITA => '其他',
+			GFC_CATEGORY_TIAOXIAN_FENBAO => '分包合作',
+		);
+		
+		define('GFC_CATEGORY_EXTRA_INTEGRATION', 1);// 集成:集成
+		define('GFC_CATEGORY_EXTRA_GXCP', 2);// 集成:购销产品
+		define('GFC_CATEGORY_EXTRA_JZZN', 3);// 集成:建筑智能
+		define('GFC_CATEGORY_EXTRA_SERVICE_NEW', 4);// 服务:新增服务
+		define('GFC_CATEGORY_EXTRA_SERVICE_RENEW', 5);// 服务:续签服务
+		define('GFC_CATEGORY_EXTRA_SERVICE_OWNER', 6);// 服务:自主服务
+		define('GFC_CATEGORY_EXTRA_TAXFREE', 7);// 技术开发免税
+		define('GFC_CATEGORY_EXTRA_SOFTWARE_GC', 8);// 软件:工程软件
+		define('GFC_CATEGORY_EXTRA_PRODUCT_OWNER', 9);// 自主产品:自主产品
+		define('GFC_CATEGORY_EXTRA_PRODUCT_OWNER_JIZJIT', 10);// 自主产品:自主产品（即增即退）
+		define('GFC_CATEGORY_EXTRA_PRODUCT_AGENT', 11);// 自主产品:代理产品
+		define('GFC_CATEGORY_EXTRA_POLICY', 12);// 政策性研发
+		define('GFC_CATEGORY_EXTRA_POLICY_LIXIANG', 13);// 政策性立项
+		define('GFC_CATEGORY_EXTRA_NEW', 14);// 新增
+		define('GFC_CATEGORY_EXTRA_RENEW', 15);// 续签
+		
+		$GLOBALS['m_gfc']['text']['gfc_category_extra'] = array(
+			GFC_CATEGORY_EXTRA_INTEGRATION => '集成',
+			GFC_CATEGORY_EXTRA_GXCP => '购销产品',
+			GFC_CATEGORY_EXTRA_SERVICE_NEW => '新增服务',
+			GFC_CATEGORY_EXTRA_SERVICE_RENEW => '续签服务',
+			GFC_CATEGORY_EXTRA_SERVICE_OWNER => '自主服务',
+			GFC_CATEGORY_EXTRA_PRODUCT_OWNER => '自主产品',
+			GFC_CATEGORY_EXTRA_PRODUCT_OWNER_JIZJIT=> '自主产品(即征即退)',
+			GFC_CATEGORY_EXTRA_PRODUCT_AGENT => '代理产品',
+			GFC_CATEGORY_EXTRA_TAXFREE => '技术开发免税',
+			GFC_CATEGORY_EXTRA_SOFTWARE_GC => '工程软件',
+			GFC_CATEGORY_EXTRA_JZZN => '建筑智能',
+			GFC_CATEGORY_EXTRA_POLICY => '政策性研发(免税)',
+			GFC_CATEGORY_EXTRA_POLICY_LIXIANG => '政策性立项',
+		    GFC_CATEGORY_EXTRA_NEW => '新增',
+		    GFC_CATEGORY_EXTRA_RENEW => '续签',
+		);
+		
+		define('GFC_CATEGORY_STATISTIC_DB', 1);// 等保
+		define('GFC_CATEGORY_STATISTIC_FB', 2);// 分包
+		define('GFC_CATEGORY_STATISTIC_XNH', 3);// 虚拟化
+		define('GFC_CATEGORY_STATISTIC_SZCG', 4);// 数字城管
+		define('GFC_CATEGORY_STATISTIC_SPHY', 5);// 视频会议
+		define('GFC_CATEGORY_STATISTIC_YWFW', 6);// 运维服务
+		define('GFC_CATEGORY_STATISTIC_AQFW', 7);// 安全服务
+		define('GFC_CATEGORY_STATISTIC_ZXFW', 8);// 咨询服务
+		define('GFC_CATEGORY_STATISTIC_WZAQBZ', 9);// 网站安全保障
+		define('GFC_CATEGORY_STATISTIC_WYDMJC', 10);// Web源代码检测
+		define('GFC_CATEGORY_STATISTIC_ITZL', 11);// IT治理
+		define('GFC_CATEGORY_STATISTIC_MMJK', 12);// 木马监控
+		define('GFC_CATEGORY_STATISTIC_WLSYTY', 13);// 网络使用体验
+		define('GFC_CATEGORY_STATISTIC_XNHFW', 14);// 虚拟化服务
+		define('GFC_CATEGORY_STATISTIC_MW', 15);// Move Wish(移动办公)
+		define('GFC_CATEGORY_STATISTIC_YJYL', 16);// 应急演练
+		define('GFC_CATEGORY_STATISTIC_WZ', 17);// 网站
+		define('GFC_CATEGORY_STATISTIC_JFBQ', 18);// 机房搬迁
+		define('GFC_CATEGORY_STATISTIC_30SOC', 19);// 30SOC
+		define('GFC_CATEGORY_STATISTIC_CLOUDWISH', 20);// Cloud Wish
+		define('GFC_CATEGORY_STATISTIC_IWISHITSM', 21);// IWISHITSM
+		define('GFC_CATEGORY_STATISTIC_30IMONITOR', 22);// 30IMONITOR
+		define('GFC_CATEGORY_STATISTIC_ITSM', 23);// ITSM
+		define('GFC_CATEGORY_STATISTIC_CISP', 24);// CISP
+		define('GFC_CATEGORY_STATISTIC_30PAD', 25);// 30PAD
+		define('GFC_CATEGORY_STATISTIC_IDS', 26);// 鹰眼（ids）
+		define('GFC_CATEGORY_STATISTIC_QT', 27);// 其他
+		define('GFC_CATEGORY_STATISTIC_SJ_YQ', 28);//数据-舆情
+		define('GFC_CATEGORY_STATISTIC_SJ_XY', 29);//数据-信用
+		define('GFC_CATEGORY_STATISTIC_SJ_YFW', 30);//数据-云服务
+		define('GFC_CATEGORY_STATISTIC_SJ_QT', 31);//数据-其他
+		define('GFC_CATEGORY_STATISTIC_ZHCS', 32);//智慧城市
+		define('GFC_CATEGORY_STATISTIC_SJHY', 33);//四局合一
+		define('GFC_CATEGORY_STATISTIC_GY_FHQ', 34);//工业防火墙
+		define('GFC_CATEGORY_STATISTIC_GY_JK', 35);//工业监控
+		define('GFC_CATEGORY_STATISTIC_GY_CPGJ', 36);//工业测评工具
+		define('GFC_CATEGORY_STATISTIC_GK', 37);//工控
+		
+		define('GFC_CATEGORY_STATISTIC_NEW_AQZXFW', 38);  //安全咨询服务
+		define('GFC_CATEGORY_STATISTIC_NEW_AQPXFW', 39);  //安全培训服务
+		define('GFC_CATEGORY_STATISTIC_NEW_AQZCFW', 40);  //安全驻场服务
+		define('GFC_CATEGORY_STATISTIC_NEW_AQZCFWXJ', 41);  //安全非驻场服务（巡检）
+		define('GFC_CATEGORY_STATISTIC_NEW_HZAQBZFW', 42);  //会展安全保障服务
+		define('GFC_CATEGORY_STATISTIC_NEW_SLYYYAQFW', 43);  //三零优异云安全服务
+		define('GFC_CATEGORY_STATISTIC_NEW_SLSOCYAQFW', 44);  //三零SOC云安全服务
+		define('GFC_CATEGORY_STATISTIC_NEW_SLITSMSFWGLPT', 45);  //三零ITSMS服务管理平台
+		define('GFC_CATEGORY_STATISTIC_NEW_WBFW', 46);  //维保服务
+		define('GFC_CATEGORY_STATISTIC_NEW_DJBHFJBHFW', 47);  //等级保护、分级保护服务
+		define('GFC_CATEGORY_STATISTIC_NEW_AQCSSTLDSM', 48);  //安全测试/渗透/漏洞扫描
+		define('GFC_CATEGORY_STATISTIC_NEW_GKXXAQPXZXFW', 49);  //工控信息安全培训咨询服务
+		define('GFC_CATEGORY_STATISTIC_NEW_GKXXAQFXPGFW', 50);  //工控信息安全风险评估服务
+		define('GFC_CATEGORY_STATISTIC_NEW_GKXXAQJGJSBCG', 51);  //工控信息安全加固及设备采购
+		define('GFC_CATEGORY_STATISTIC_NEW_GKXXAQYWFW', 52);  //工控信息安全运维服务
+		define('GFC_CATEGORY_STATISTIC_NEW_XYPTJS', 53);  //信用平台建设
+		define('GFC_CATEGORY_STATISTIC_NEW_XYSJFW', 54);  //信用数据服务
+		define('GFC_CATEGORY_STATISTIC_NEW_XYWZKF', 55);  //信用网站开发
+		define('GFC_CATEGORY_STATISTIC_NEW_QTRJKFDSJ', 56);  //其他软件开发（大数据）
+		define('GFC_CATEGORY_STATISTIC_NEW_QBPTJS', 57);  //情报平台建设
+		define('GFC_CATEGORY_STATISTIC_NEW_YLQBFW', 58);  //舆论情报服务
+		define('GFC_CATEGORY_STATISTIC_NEW_HYQBFW', 59);  //行业情报服务
+		define('GFC_CATEGORY_STATISTIC_NEW_QTRJKFQB', 60);  //其他软件开发（情报）
+		define('GFC_CATEGORY_STATISTIC_NEW_XXPTJS', 61);  //信息平台建设
+		define('GFC_CATEGORY_STATISTIC_NEW_XNHPTJS', 62);  //虚拟化平台建设
+		define('GFC_CATEGORY_STATISTIC_NEW_JFJSBQ', 63);  //机房建设/搬迁
+		define('GFC_CATEGORY_STATISTIC_NEW_YDRZBF', 64);  //异地容灾、备份
+		define('GFC_CATEGORY_STATISTIC_NEW_DJBHFJBHJC', 65);  //等级保护、分级保护集成
+		define('GFC_CATEGORY_STATISTIC_NEW_WACPXS', 66);  //网安产品销售
+		define('GFC_CATEGORY_STATISTIC_NEW_HZHBCPXS', 67);  //合作伙伴产品销售
+		define('GFC_CATEGORY_STATISTIC_NEW_QTCPXS', 68);  //其他产品销售
+		define('GFC_CATEGORY_STATISTIC_NEW_GSZLXM', 69);  //公司自立项目
+		define('GFC_CATEGORY_STATISTIC_NEW_WAGSJJLXM', 70);  //网安公司基金类项目
+		define('GFC_CATEGORY_STATISTIC_NEW_WBZCXXM', 71);  //外部政策性项目
+		
+		$GLOBALS['m_gfc']['text']['gfc_category_statistic'] = array(
+		    GFC_CATEGORY_STATISTIC_NEW_AQZXFW => '安全咨询服务',
+		    GFC_CATEGORY_STATISTIC_NEW_AQPXFW => '安全培训服务',
+		    GFC_CATEGORY_STATISTIC_NEW_AQZCFW => '安全驻场服务',
+		    GFC_CATEGORY_STATISTIC_NEW_AQZCFWXJ => '安全非驻场服务（巡检）',
+		    GFC_CATEGORY_STATISTIC_NEW_HZAQBZFW => '会展安全保障服务',
+		    GFC_CATEGORY_STATISTIC_NEW_SLYYYAQFW => '三零优异云安全服务',
+		    GFC_CATEGORY_STATISTIC_NEW_SLSOCYAQFW => '三零SOC云安全服务',
+		    GFC_CATEGORY_STATISTIC_NEW_SLITSMSFWGLPT => '三零ITSMS服务管理平台',
+		    GFC_CATEGORY_STATISTIC_NEW_WBFW => '维保服务',
+		    GFC_CATEGORY_STATISTIC_NEW_DJBHFJBHFW => '等级保护、分级保护服务',
+		    GFC_CATEGORY_STATISTIC_NEW_AQCSSTLDSM => '安全测试/渗透/漏洞扫描',
+		    GFC_CATEGORY_STATISTIC_NEW_GKXXAQPXZXFW => '工控信息安全培训咨询服务',
+		    GFC_CATEGORY_STATISTIC_NEW_GKXXAQFXPGFW => '工控信息安全风险评估服务',
+		    GFC_CATEGORY_STATISTIC_NEW_GKXXAQJGJSBCG => '工控信息安全加固及设备采购',
+		    GFC_CATEGORY_STATISTIC_NEW_GKXXAQYWFW => '工控信息安全运维服务',
+		    GFC_CATEGORY_STATISTIC_NEW_XYPTJS => '信用平台建设',
+		    GFC_CATEGORY_STATISTIC_NEW_XYSJFW => '信用数据服务',
+		    GFC_CATEGORY_STATISTIC_NEW_XYWZKF => '信用网站开发',
+		    GFC_CATEGORY_STATISTIC_NEW_QTRJKFDSJ => '其他软件开发（大数据）',
+		    GFC_CATEGORY_STATISTIC_NEW_QBPTJS => '情报平台建设',
+		    GFC_CATEGORY_STATISTIC_NEW_YLQBFW => '舆论情报服务',
+		    GFC_CATEGORY_STATISTIC_NEW_HYQBFW => '行业情报服务',
+		    GFC_CATEGORY_STATISTIC_NEW_QTRJKFQB => '其他软件开发（情报）',
+		    GFC_CATEGORY_STATISTIC_NEW_XXPTJS => '信息平台建设',
+		    GFC_CATEGORY_STATISTIC_NEW_XNHPTJS => '虚拟化平台建设',
+		    GFC_CATEGORY_STATISTIC_NEW_JFJSBQ => '机房建设/搬迁',
+		    GFC_CATEGORY_STATISTIC_NEW_YDRZBF => '异地容灾、备份',
+		    GFC_CATEGORY_STATISTIC_NEW_DJBHFJBHJC => '等级保护、分级保护集成',
+		    GFC_CATEGORY_STATISTIC_NEW_WACPXS => '网安产品销售',
+		    GFC_CATEGORY_STATISTIC_NEW_HZHBCPXS => '合作伙伴产品销售',
+		    GFC_CATEGORY_STATISTIC_NEW_QTCPXS => '其他产品销售',
+		    GFC_CATEGORY_STATISTIC_NEW_GSZLXM => '公司自立项目',
+		    GFC_CATEGORY_STATISTIC_NEW_WAGSJJLXM => '网安公司基金类项目',
+		    GFC_CATEGORY_STATISTIC_NEW_WBZCXXM => '外部政策性项目',
+		    GFC_CATEGORY_STATISTIC_SJ_YQ => '数据-舆情',
+		    GFC_CATEGORY_STATISTIC_SJ_XY => '数据-信用',
+		    GFC_CATEGORY_STATISTIC_SJ_YFW => '数据-云服务',
+		    GFC_CATEGORY_STATISTIC_SJ_QT => '数据-其他',
+		    GFC_CATEGORY_STATISTIC_ZHCS => '智慧城市',
+		    GFC_CATEGORY_STATISTIC_SJHY => '四局合一',
+		    GFC_CATEGORY_STATISTIC_GY_FHQ => '工业防火墙',
+		    GFC_CATEGORY_STATISTIC_GY_JK => '工业监控',
+		    GFC_CATEGORY_STATISTIC_GY_CPGJ => '工业测评工具',
+		    GFC_CATEGORY_STATISTIC_GK => '工控',
+		    GFC_CATEGORY_STATISTIC_DB => '等级保护',
+		    GFC_CATEGORY_STATISTIC_FB => '分级保护',
+		    GFC_CATEGORY_STATISTIC_YWFW => '运维服务',
+		    GFC_CATEGORY_STATISTIC_ZXFW => '咨询服务',
+		    GFC_CATEGORY_STATISTIC_AQFW => '安全服务',
+		    GFC_CATEGORY_STATISTIC_WZAQBZ => '网站安全保障',
+		    GFC_CATEGORY_STATISTIC_WYDMJC => 'Web源代码检测',
+		    GFC_CATEGORY_STATISTIC_ITZL => 'IT治理',
+		    GFC_CATEGORY_STATISTIC_MMJK => '木马监控',
+		    GFC_CATEGORY_STATISTIC_SZCG => '数字城管',
+		    GFC_CATEGORY_STATISTIC_SPHY => '视频会议',
+		    GFC_CATEGORY_STATISTIC_YJYL => '应急演练',
+		    GFC_CATEGORY_STATISTIC_JFBQ => '机房搬迁',
+		    GFC_CATEGORY_STATISTIC_XNH => '虚拟化',
+		    GFC_CATEGORY_STATISTIC_XNHFW => '数据中心',
+		    GFC_CATEGORY_STATISTIC_MW => 'Move Wish(移动办公)',
+		    GFC_CATEGORY_STATISTIC_IWISHITSM => 'iWishITSM & 30iMonitor',
+		    GFC_CATEGORY_STATISTIC_30SOC => '30SOC',
+		    GFC_CATEGORY_STATISTIC_CLOUDWISH => 'Cloud Wish',
+		    GFC_CATEGORY_STATISTIC_ITSM => 'ITSM等保模块',
+		    GFC_CATEGORY_STATISTIC_IDS => '鹰眼(ids)',
+		    GFC_CATEGORY_STATISTIC_30PAD => '30PAD',
+		    GFC_CATEGORY_STATISTIC_CISP => 'CISP',
+		    GFC_CATEGORY_STATISTIC_WZ => '网站',
+		    GFC_CATEGORY_STATISTIC_30IMONITOR => '30iMonitor',
+		    GFC_CATEGORY_STATISTIC_QT => '其他',
+		);
+		
+		//评审结果
+		define('GFCC_RESULT_TO_DO', 0);// 不通过
+    	define('GFCC_RESULT_NO', 1);// 不通过
+    	define('GFCC_RESULT_YES', 2);// 通过
+		define('GFCC_RESULT_ALTER', 3);// 修改后通过
+
+    	$GLOBALS['m_gfc']['text']['gfcc_result']=array(
+//    		GFCC_RESULT_TO_DO => '待评审',
+    		GFCC_RESULT_NO => '不通过',
+			GFCC_RESULT_YES => '通过',
+			GFCC_RESULT_ALTER => '修改后通过',
+    	);
+    	
+    	//人员类型
+    	define('PMC_TYPE_SC', 1);// 市场支持
+    	define('PMC_TYPE_JS', 2);// 技术支持
+		define('PMC_TYPE_CG', 3);// 采购支持
+		define('PMC_TYPE_SS', 4);// 实施人员
+
+    	$GLOBALS['m_gfc']['text']['pmc_type']=array(
+    		PMC_TYPE_SC => '市场支持',
+			PMC_TYPE_JS => '技术支持',
+			PMC_TYPE_CG => '采购支持',
+			PMC_TYPE_SS => '实施人员',
+    	);
+    }
+    
+	/**
+	 * 
+	 * 权限验证
+	 * @param $content
+	 */
+	public function check_acl( $data_db=array() ,$acl_list = NULL)
+    {
+    	/************变量初始化****************/
+    	
+    	$data_get=trim_array($this->uri->uri_to_assoc(4));
+    	$act=element('act', $data_get);
+    	
+    	if( ! $acl_list )
+    	$acl_list= $this->m_proc_gfc->get_acl();
+
+    	$msg='';
+    	/************权限验证*****************/
+
+    	//如果有超级权限，TRUE
+    	if( ($acl_list & pow(2,ACL_PROC_GFC_SUPER)) != 0 )
+    	{
+    		return TRUE;
+    	}
+
+    	$check_acl=FALSE;
+
+    	if( ! $check_acl
+    	 && ($acl_list & pow(2,ACL_PROC_GFC_USER)) != 0
+    	)
+	    {
+	     	$check_acl=TRUE;
+	    }
+
+	    if( ! $check_acl )
+	    {
+			if( ! $msg )
+			$msg = '您没有【'.$this->title.'】的【操作】权限不可进行操作！' ;
+
+			redirect('base/main/show_err/msg/'.fun_urlencode($msg));
+	    }
+    }
+    
+	/**
+     * 
+     */
+	public function get_code($data_save=array())
+    {
+    	$where='';
+
+    	$pre='';
+    	
+    	$pre_gfc='';
+    	
+    	switch (element('gfc_org', $data_save['content']))
+    	{
+    		//成都
+    		case '22B090894556F980B81361AA996ACF3B':
+    			$pre='CD';
+    			break;
+    		//北京
+    		case '52D7478777D4BA42B3ECD05DCA53B7C9':
+    		case '92F7520839C9108378883C6A90BEBFBE':
+    			$pre='BJ';
+    			break;
+    		//广州
+    		case '95844F63647F4D89B7773198DDCE04C0':
+    			$pre='GZ';
+    			break;
+    		//杭州
+    		case '9F8453E40A17EDDAA9EE72BB49C52E83':
+    			$pre='HZ';
+    			break;
+    		//上海
+//    		case 'B12F0862F53C9772369A4A990D7EA510':
+    		default:
+    			$pre='SH';
+    	}
+    	
+    	$pre_2 = '';
+    	
+    	switch (element('gfc_category_statistic', $data_save['content']))
+    	{
+    		case GFC_CATEGORY_STATISTIC_NEW_AQZXFW ://安全咨询服务
+		    case GFC_CATEGORY_STATISTIC_NEW_AQPXFW ://安全培训服务
+		    case GFC_CATEGORY_STATISTIC_NEW_AQZCFW ://安全驻场服务
+		    case GFC_CATEGORY_STATISTIC_NEW_AQZCFWXJ ://安全非驻场服务（巡检）
+		    case GFC_CATEGORY_STATISTIC_NEW_HZAQBZFW ://会展安全保障服务
+		    case GFC_CATEGORY_STATISTIC_NEW_SLYYYAQFW ://三零优异云安全服务
+		    case GFC_CATEGORY_STATISTIC_NEW_SLSOCYAQFW ://三零SOC云安全服务
+		    case GFC_CATEGORY_STATISTIC_NEW_SLITSMSFWGLPT ://三零ITSMS服务管理平台
+		    case GFC_CATEGORY_STATISTIC_NEW_WBFW ://维保服务
+		    case GFC_CATEGORY_STATISTIC_NEW_DJBHFJBHFW ://等级保护、分级保护服务
+		    case GFC_CATEGORY_STATISTIC_NEW_AQCSSTLDSM ://安全测试/渗透/漏洞扫描
+		    
+		    	$pre_2 = 'F';
+		    	break;
+		    case GFC_CATEGORY_STATISTIC_NEW_GKXXAQPXZXFW ://工控信息安全培训咨询服务
+		    case GFC_CATEGORY_STATISTIC_NEW_GKXXAQFXPGFW ://工控信息安全风险评估服务
+		    case GFC_CATEGORY_STATISTIC_NEW_GKXXAQJGJSBCG ://工控信息安全加固及设备采购
+		    case GFC_CATEGORY_STATISTIC_NEW_GKXXAQYWFW ://工控信息安全运维服务
+		    
+		    	$pre_2 = 'G';
+		    	break;
+		    case GFC_CATEGORY_STATISTIC_NEW_XYPTJS ://信用平台建设
+		    case GFC_CATEGORY_STATISTIC_NEW_XYSJFW ://信用数据服务
+		    case GFC_CATEGORY_STATISTIC_NEW_XYWZKF ://信用网站开发
+		    case GFC_CATEGORY_STATISTIC_NEW_QTRJKFDSJ ://其他软件开发（大数据）
+		    
+		    	$pre_2 = 'R';
+		    	break;
+		    case GFC_CATEGORY_STATISTIC_NEW_QBPTJS ://情报平台建设
+		    case GFC_CATEGORY_STATISTIC_NEW_YLQBFW ://舆论情报服务
+		    case GFC_CATEGORY_STATISTIC_NEW_HYQBFW ://行业情报服务
+		    case GFC_CATEGORY_STATISTIC_NEW_QTRJKFQB ://其他软件开发（情报）
+		    
+		    	$pre_2 = 'Q';
+		    	break;
+		    case GFC_CATEGORY_STATISTIC_NEW_XXPTJS ://信息平台建设
+		    case GFC_CATEGORY_STATISTIC_NEW_XNHPTJS ://虚拟化平台建设
+		    case GFC_CATEGORY_STATISTIC_NEW_JFJSBQ ://机房建设/搬迁
+		    case GFC_CATEGORY_STATISTIC_NEW_YDRZBF ://异地容灾、备份
+		    case GFC_CATEGORY_STATISTIC_NEW_DJBHFJBHJC ://等级保护、分级保护集成
+		    
+		    	$pre_2 = 'J';
+		    	break;
+		    case GFC_CATEGORY_STATISTIC_NEW_WACPXS ://网安产品销售
+		    case GFC_CATEGORY_STATISTIC_NEW_HZHBCPXS ://合作伙伴产品销售
+		    case GFC_CATEGORY_STATISTIC_NEW_QTCPXS ://其他产品销售
+		    
+		    	$pre_2 = 'C';
+		    	break;
+		    case GFC_CATEGORY_STATISTIC_NEW_GSZLXM ://公司自立项目
+		    case GFC_CATEGORY_STATISTIC_NEW_WAGSJJLXM ://网安公司基金类项目
+		    case GFC_CATEGORY_STATISTIC_NEW_WBZCXXM ://外部政策性项目
+		    
+		    	$pre_2 = 'Z';
+		    	break;
+    	}
+    	
+    	$after = '';
+    	switch (element('gfc_category_extra', $data_save['content']))
+    	{
+    		case GFC_CATEGORY_EXTRA_NEW:
+    			$after = 'N';
+    			break;
+    		case GFC_CATEGORY_EXTRA_RENEW:
+    			$after = 'X';
+    			break;
+    	}
+    	
+    	$pre_search=$pre.'-_'.date("Ym");
+    	$where .= " AND gfc_finance_code LIKE  '{$pre_search}%'"; 
+    	$max_code=$this->m_db->get_m_value('pm_given_financial_code','gfc_finance_code',$where);
+    	$code=$pre.'-'.$pre_2.date("Ym").str_pad((intval(substr($max_code, (strlen($pre_search)+1),3))+1), 3, '0', STR_PAD_LEFT).$after;
+		    	
+    	$data_save['content']['gfc_finance_code'] = $code;
+//    	$data_save['content']['gfc_finance_code_pre'] = $pre;
+//    	$data_save['content']['gfc_finance_code_after'] = $after;
+    	return $data_save;
+    	
+    }
+    
+	/**
+	 * 
+	 * @param $id
+	 */
+	public function get($id)
+    {
+    	/************模型载入*****************/
+    	
+    	/************变量初始化****************/
+		$data_db=array();//数据库数组
+		$arr_search=array();
+		$rtn=array();//结果
+		
+		/************变量赋值*****************/
+		$arr_search['field']='*';
+    	$arr_search['from']=$this->table_name;
+		$arr_search['where']='AND '.$this->pk_id.' = ? ';
+		$arr_search['value'][]=$id;
+    	$rs=$this->m_db->query($arr_search);
+    	
+    	if(count($rs['content'])>0)
+    	$rtn=current($rs['content']);
+    	
+    	/************返回数据*****************/
+		return $rtn;
+    }
+    
+	/**
+	 * 
+	 * 创建
+	 * @param $content
+	 */
+	public function add($content)
+	{
+		/************模型载入*****************/
+
+		/************变量初始化****************/
+		$data_save=array();//
+		$rtn=array();//结果
+		$rtn['rtn']=TRUE;
+		/************变量赋值*****************/
+		$data_save['content']=$content;
+
+		if( empty(element($this->pk_id,$data_save['content'])) ) $data_save['content'][$this->pk_id]=get_guid();
+
+
+		$data_save['content']['db_time_update']=date("Y-m-d H:i:s");
+		$data_save['content']['db_time_create']=date("Y-m-d H:i:s");
+		$data_save['content']['db_person_create']=$this->sess->userdata('c_id') ;
+
+		/************数据处理*****************/
+
+		$this->db->trans_begin();
+
+		if($rtn['rtn'])
+			$rtn=$this->m_db->insert($data_save['content'],$this->table_name);
+
+		if( ! $rtn['rtn'] )
+		{
+			$this->db->trans_rollback();
+		}
+		else
+		{
+			$this->db->trans_commit();
+			$rtn['id']=$data_save['content'][$this->pk_id];
+		}
+
+		/************返回数据*****************/
+		return $rtn;
+	}
+    
+	/**
+	 * 
+	 * 更新
+	 * @param $content
+	 */
+	public function update($content)
+	{
+		/************模型载入*****************/
+
+		/************变量初始化****************/
+		$data_save=array();//
+		$rtn=array();//结果
+		$rtn['rtn']=TRUE;
+		$where='';
+		/************变量赋值*****************/
+		$data_save['content']=$content;
+
+		$data_save['content']['db_time_update']=date("Y-m-d H:i:s");
+		$where=" 1=1 AND {$this->pk_id} = '{$data_save['content'][$this->pk_id]}'";
+
+		/************数据处理*****************/
+		$this->db->trans_begin();
+
+		if($rtn['rtn'])
+			$rtn=$this->m_db->update($this->table_name,$data_save['content'],$where);
+
+		if( ! $rtn['rtn'] )
+		{
+			$this->db->trans_rollback();
+		}
+		else
+		{
+			$this->db->trans_commit();
+		}
+		/************返回数据*****************/
+		return $rtn;
+	}
+	
+	/**
+	 * 
+	 * 删除
+	 * @param $content
+	 */
+	public function del($id)
+    {
+    	/************模型载入*****************/
+    	
+    	/************变量初始化****************/
+    	$data_db=array();
+		$where=array();
+		$rtn=array();//结果
+		$rtn['rtn']=TRUE;
+		/************变量赋值*****************/
+		$where[$this->pk_id]=$id;
+    	
+		/************数据处理*****************/
+		
+		//@todo 删除关联数据验证
+    	$arr_link=array(
+    	);
+		
+		if(count($arr_link) > 0)
+		{
+			foreach ($arr_link as $v ) {
+				$arr_tmp = explode('.', $v);
+				$field=$this->m_base->get_field_where($arr_tmp[0],$arr_tmp[1]," AND {$arr_tmp[1]} = '{$id}' ");
+				if($field)
+				{
+					$rtn['rtn'] = FALSE;
+					$rtn['msg_err']=$rtn['err']['msg'] = '于【'.$arr_tmp[0].'】存在关联数据,不可删除!';
+					return $rtn;
+				}
+			}
+		}
+		
+		$data_db['content'] = $this->get($id);
+		
+    	$this->db->trans_begin();
+    	
+    	if($rtn['rtn'])
+        $rtn=$this->m_db->delete($this->table_name,$where);
+        
+        if($rtn['rtn'])
+        $rtn=$this->m_db->delete('pm_contact',$where);
+        
+        if($rtn['rtn'])
+        $rtn=$this->m_db->delete('pm_bill_plan',$where);
+        
+        if($rtn['rtn'])
+        $rtn=$this->m_db->delete('fm_gfc_bud',$where);
+        
+        if($rtn['rtn'])
+        $rtn=$this->m_db->delete('pm_gfc_cr',$where);
+        
+        if($rtn['rtn'])
+        {
+        	$data_db['content_s'] = $this->m_gfc_secret->get_of_gfc($id);
+        	
+        	if(element('gfcs_id', $data_db['content_s']))
+        	{
+	        	$where = array();
+	        	$where['gfcs_id'] = $data_db['content_s']['gfcs_id'];
+	        	$rtn=$this->m_db->delete('pm_gfc_secret',$where);
+	        	
+	        	 //取消工单信息
+		        $this->m_work_list->cancel_wl($data_db['content_s']['gfcs_id'],'m_gfc_secret');
+        	}
+        }
+        
+        $where = array();
+        $where['eli_gfc_id'] = $id;
+        if($rtn['rtn'])
+        $rtn=$this->m_db->delete('pm_eq_list_item',$where);
+		
+    	if( ! $rtn['rtn'] )
+	    {
+		    $this->db->trans_rollback();
+		}
+		else
+		{
+		    $this->db->trans_commit();
+		    
+		    //取消工单信息
+	        $this->m_work_list->cancel_wl($id,$this->model_name);
+	        
+	        //删除关联文件
+	        $this->m_file->del_link_file($id,$this->table_name,$this->pk_id);
+	        
+	        //删除所有关联数据
+			$this->m_link->del_all($id);
+		}
+		
+    	/************返回数据*****************/
+		return $rtn;
+    }
+    
+	/**
+     * 
+     * 生成导入xlsx
+     */
+	public function create_import_xlsx()
+    {
+    	$this->load->model('base/m_excel');
+    	
+    	$conf=array();
+    	
+    	//@todo 导入xlsx配置
+    	$conf['field_edit']=array(
+			'pm_given_financial_code[gfc_name]',
+			'pm_given_financial_code[gfc_note]',
+    	);
+    	
+    	$conf['field_required']=array(
+			'pm_given_financial_code[gfc_name]',
+    	);
+    	
+    	$conf['field_define']=array(
+    	);
+    	
+    	$conf['table_form']=array(
+			'pm_given_financial_code'=>$this->table_form,
+    	);
+    	
+    	$path=str_replace('\\', '/', APPPATH).'models/'.$this->proc_id.'/'.$this->model_name.'.xlsx';
+    	
+    	$this->m_excel->create_import_file($path,$conf);
+    }
+    
+    /**
+	 * 
+	 * 载入编辑界面
+	 * @param $content
+	 */
+	public function load($data_get=array(),$data_post=array())
+	{
+		$this->load->model('proc_gfc/m_bp');
+		/************变量初始化****************/
+		$arr_view = array();//视图数组
+		$data_out = array();//输出数组
+		$data_db  = array();//数据库数据
+
+		//@todo 必填只读配置
+		//必填数组
+		$data_out['field_required']=array(
+			'content[gfc_org]',
+			'content[gfc_name]',
+			'content[gfc_org_jia_s]',
+			'content[gfc_org_jia]',
+			'content[gfc_c_jia]',
+			'content[gfc_c_s]',
+			'content[gfc_c]',
+			'content[gfc_ou_s]',
+			'content[gfc_ou]',
+			'content[gfc_category_contract]',
+			'content[gfc_sum]',
+			'content[gfc_pt_plan_sign]',
+			'content[gfc_category_main]',
+			'content[gfc_category_tiaoxian_main]',
+			'content[gfc_category_tiaoxian]',
+			'content[gfc_category_extra]',
+			'content[gfc_category_statistic]',
+			'content[gfc_category_subc]',
+			'content[gfc_category_cooperation]',
+			'content[gfc_area]',
+			'content[gfc_area_1]',
+			'content[gfc_area_2]',
+		
+			'content[gfc_category_bill]',
+		
+			'content[gfc_start_time_sign]',
+			'content[gfc_complet_time_sign]',
+			'content[gfc_budm_id]',
+		
+			'content[gfcs_c_check]',
+		
+		);
+		
+		//编辑数组
+		$data_out['field_edit']=array(
+			'content[db_time_update]',
+		
+			'content[gfc_finance_code]',
+			'content[gfc_time_node_sign]',
+			'content[gfc_ou_tj]',
+			'content[gfc_ou_tj_data]',
+		
+			'content[gfc_org]',
+			'content[gfc_name]',
+			'content[gfc_org_jia_s]',
+			'content[gfc_org_jia]',
+			'content[gfc_c_jia]',
+			'content[gfc_c_jia_tel]',
+		
+			'content[gfc_c_s]',
+			'content[gfc_c]',
+			'content[gfc_ou_s]',
+			'content[gfc_ou]',
+		
+			'content[gfc_category_contract]',
+			'content[gfc_sum]',
+			'content[gfc_pt_plan_sign]',
+			'content[gfc_category_main]',
+			'content[gfc_category_secret]',
+			'content[gfc_category_tiaoxian_main]',
+			'content[gfc_category_tiaoxian]',
+			'content[gfc_category_extra]',
+			'content[gfc_category_statistic]',
+			'content[gfc_category_subc]',
+			'content[gfc_category_cooperation]',
+			'content[gfc_area]',
+			'content[gfc_area_1]',
+			'content[gfc_area_2]',
+			'content[gfc_area_show]',
+			'content[gfc_note]',
+		
+			'content[pm_c]',
+		
+			'content[gfc_category_bill]',
+			'content[gfc_bp]',
+			'content[gfc_bp_sum_remain]',
+		
+			'content[gfc_eli]',
+		
+			'content[gfc_start_time_sign]',
+			'content[gfc_complet_time_sign]',
+			'content[gfc_budm_id]',
+			'content[gfc_bud_sum]',
+			'content[gfc_tax]',
+			'content[budi]',
+		
+			'content[gfc_name_tm]',
+			'content[gfcs_c_check]',
+			'content[gfcs_c_check_s]',
+		
+			'content[gfc_cr]',
+		);
+		
+		//只读数组
+		$data_out['field_view']=array(
+			'content[gfc_c_tj_s]',
+			'content[gfc_c_tj]',
+		
+			'content[gfc_bp_sum]',
+			'content[gfc_bp_sum_remain]',
+		
+			'content[gfc_bp_prog]',
+			'content[gfc_bp_prog_text]',
+		
+			'content[gfc_el_verson]',
+		
+			'content[gfc_bud_verson]',
+			'content[gfc_date_bud_alter]',
+			'content[gfc_bud_verson]',
+		
+			'content[gfc_cr_sum]',
+			'content[gfc_cr_sum_cb]',
+			'content[gfc_cr_verson]',
+			'content[gfc_subc_sum]',
+		);
+		
+		$data_out['op_disable']=array();
+		
+		//输出数据数组
+		$data_out['field_out']=array_unique(array_merge($data_out['field_view'],$data_out['field_edit']));
+		
+		/************变量赋值*****************/
+		
+		$flag_log=$this->input->post('flag_log');//日志标签
+		
+		if( empty($data_get) )
+		$data_get= trim_array($this->uri->uri_to_assoc(4));
+		
+		if( ! isset($data_get['act']) )
+		$data_get['act'] = STAT_ACT_CREATE;
+		
+		if( empty( element('btn', $data_post) ) )
+		$data_post['btn']=$this->input->post('btn');//按钮
+		
+		$btn=$data_post['btn'];
+		
+		if( empty( element('content', $data_post) ) )
+		$data_post['content']=trim_array($this->input->post('content'));
+		
+		if( empty( element('wl', $data_post) ) )
+		$data_post['wl']=trim_array($this->input->post('wl'));
+		
+		$flag_more=element('flag_more', $data_post);
+		/************字段定义*****************/
+		//@todo 字段定义
+		$arr_field=array_unique(array_merge($data_out['field_edit'], $data_out['field_view']));
+		
+		$data_out['json_field_define']=array();
+		$data_out['json_field_define']['gfc_c_jia']='';
+		$data_out['json_field_define']['gfc_category_main']=get_html_json_for_arr($GLOBALS['m_gfc']['text']['gfc_category_main'] );
+		$data_out['json_field_define']['gfc_category_secret']=get_html_json_for_arr($GLOBALS['m_gfc']['text']['gfc_category_secret'] );
+		$data_out['json_field_define']['gfc_category_tiaoxian_main']=get_html_json_for_arr($GLOBALS['m_gfc']['text']['gfc_category_tiaoxian_main'] );
+		$data_out['json_field_define']['gfc_category_tiaoxian']=get_html_json_for_arr($GLOBALS['m_gfc']['text']['gfc_category_tiaoxian'] );
+		$data_out['json_field_define']['gfc_category_extra']=get_html_json_for_arr($GLOBALS['m_gfc']['text']['gfc_category_extra'] );
+		$data_out['json_field_define']['gfc_category_statistic']=get_html_json_for_arr($GLOBALS['m_gfc']['text']['gfc_category_statistic'] );
+		$data_out['json_field_define']['gfc_category_subc']=get_html_json_for_arr($GLOBALS['m_budm']['text']['gfc_category_subc'] );
+		$data_out['json_field_define']['gfc_category_cooperation']=get_html_json_for_arr($GLOBALS['m_base']['text']['base_yn'] );
+		$data_out['json_field_define']['gfc_category_contract']=get_html_json_for_arr($GLOBALS['m_base']['text']['base_yn'] );
+		$data_out['json_field_define']['bp_type']=get_html_json_for_arr($GLOBALS['m_bp']['text']['bp_type'] );
+		$data_out['json_field_define']['pmc_type']=get_html_json_for_arr($GLOBALS['m_gfc']['text']['pmc_type'] );
+		$data_out['json_field_define']['gfcc_result']=get_html_json_for_arr($GLOBALS['m_gfc']['text']['gfcc_result'] );
+		$data_out['json_field_define']['gfc_category_bill']=get_html_json_for_arr($GLOBALS['m_base']['text']['base_yn'] );
+		/************数据读取*****************/
+		$data_db['content']=array();
+		$data_db['wl_list']=array();
+		$min_ppo = 0;
+		
+		switch ($data_get['act']) {
+			case STAT_ACT_EDIT:
+			case STAT_ACT_VIEW:
+				try {
+					
+					//日志读取
+					if( ! empty($flag_log))
+					{
+						$data_get['act'] = STAT_ACT_VIEW;
+						$data_out['op_disable'][]='btn_log';
+						
+						$log_content=json_decode($this->input->post('log_content'),TRUE);
+						$data_old=element('old', $log_content);
+						$data_db['content']=$data_old['content'];
+						$data_change=element('new', $log_content);
+						
+						if( count(element('content',$data_change))>0)
+						{
+							foreach (element('content',$data_change) as $k=>$v) 
+							{
+								if( is_array($v) ) {
+									$v = implode(',', $v);
+
+									if(element($k,$data_db['content']))
+										$data_db['content'][$k] = implode(',', $data_db['content'][$k]);
+								}
+
+								if( $v != element($k,$data_db['content']) )
+								{
+									switch ($k)
+									{
+										case 'gfc_ou_tj':
+											
+											$diff='';
+											
+											$arr_f=array();
+											if( $data_db['content']['gfc_ou_tj_data'] )
+											$arr_f = json_decode($data_db['content']['gfc_ou_tj_data'] ,TRUE);
+											
+											if(count($arr_f)>0)
+											{
+												foreach ($arr_f as $v1) {
+													$diff.='<br>'.$v1['text'];
+												}
+
+											}
+											
+											$data_out['log']['content['.$k.']']='变更前:'.$diff;
+											
+											$data_db['content'][$k] = explode(',', $v) ;
+											$data_db['content'][$k.'_data'] = element('gfc_ou_tj_data', $data_change['content']);
+											break;
+											
+										case 'gfc_org':
+											$data_out['log']['content['.$k.']']='变更前:'. $this->m_base->get_field_where('sys_org','o_name', " AND o_id ='{$data_db['content']['gfc_org']}'");
+											$data_db['content'][$k] =$v ;
+		
+											break;
+										case 'gfc_c_s':
+											$data_out['log']['content['.$k.']']='变更前:'. $this->m_base->get_c_show_by_cid($data_db['content']['gfc_c']);
+											$data_db['content'][$k] =$v ;
+		
+											break;
+										case 'gfc_ou_s':
+											$data_out['log']['content['.$k.']']='变更前:'. $this->m_base->get_field_where('sys_ou','ou_name', " AND ou_id ='{$data_db['content']['gfc_ou']}'");
+											$data_db['content'][$k] =$v ;
+											break;
+										case 'gfc_c_tj_s':
+											$data_out['log']['content['.$k.']']='变更前:'. $this->m_base->get_c_show_by_cid($data_db['content']['gfc_c_tj']);
+											$data_db['content'][$k] =$v ;
+											break;
+										case 'gfc_org_jia_s':
+											$data_out['log']['content['.$k.']']='变更前:'. $this->m_base->get_field_where('sys_org','o_name', " AND o_id ='{$data_db['content']['gfc_org_jia']}'");
+											$data_db['content'][$k] =$v ;
+											break;
+										case 'gfc_category_cooperation':
+										case 'gfc_category_contract':
+											
+											if( (element($k,$data_db['content']) || element($k,$data_db['content']) == '0' )
+									         && isset($GLOBALS['m_base']['text'][$k][$v]) )
+											$data_db['content'][$k]=$GLOBALS['m_base']['text']['base_yn'][element($k,$data_db['content'])];
+									
+											$data_out['log']['content['.$k.']']='变更前:'.element($k,$data_db['content']);
+											$data_db['content'][$k] =$v ;
+											
+											break;
+											
+										case 'gfc_area_1':
+										case 'gfc_area_2':
+											break;
+										case 'gfc_area':
+											
+											$arr_tmp = array();
+											
+											if($data_db['content'][$k])
+											{
+												$arr_tmp = explode(',', $data_db['content'][$k]);
+												$data_db['content']['gfc_area'] = element(0, $arr_tmp);
+												$data_db['content']['gfc_area_1'] = element(1, $arr_tmp);
+												$data_db['content']['gfc_area_2'] = element(2, $arr_tmp);
+											}
+											
+											$arr_tmp_2 = explode(',',$v);
+											if($arr_tmp_2[0] != element(0, $arr_tmp))
+											{
+												$data_out['log']['content[gfc_area]']='变更前:'.$this->m_base->get_area_show(element(0, $arr_tmp));
+											}
+											
+											if($arr_tmp_2[1] != element(1, $arr_tmp))
+											{
+												$data_out['log']['content[gfc_area_1]']='变更前:'.$this->m_base->get_area_show(element(1, $arr_tmp),element(0, $arr_tmp));
+											}
+											
+											if($arr_tmp_2[2] != element(2, $arr_tmp))
+											{
+												$data_out['log']['content[gfc_area_2]']='变更前:'.$this->m_base->get_area_show(element(2, $arr_tmp),element(1, $arr_tmp));
+											}
+											
+											$data_db['content'][$k] =$v ;
+											break;
+											
+										case 'pm_c':
+									
+											$data_out['log']['content['.$k.']'] = $this->m_base->get_datatable_change('pmc_c_id',$v,element($k,$data_db['content']),'m_gfc','show_change_pm_contact');
+											$data_db['content'][$k] =$v ;
+											break;
+											
+										case 'gfc_bp':
+									
+											$data_out['log']['content['.$k.']'] = $this->m_base->get_datatable_change('bp_id',$v,element($k,$data_db['content']),'m_gfc','show_change_gfc_bp');
+											$data_db['content'][$k] =$v ;
+											
+											break;
+											
+										case 'gfc_eli':
+									
+											$data_out['log']['content['.$k.']'] = $this->m_base->get_datatable_change('eli_id',$v,element($k,$data_db['content']),'m_gfc','show_change_gfc_eli');
+											$data_db['content'][$k] =$v ;
+											
+											break;
+										
+										case 'gfc_bud_sum':
+											$data_out['log']['content[gfc_bud]'] = $this->m_base->get_datatable_change('budi_id',$v,element($k,$data_db['content']),'m_gfc','show_change_gfc_bud');
+											$data_db['content'][$k] =$v ;
+											
+											break;
+											
+										case 'gfc_cr':
+									
+											$data_out['log']['content['.$k.']'] = $this->m_base->get_datatable_change('gfcc_id',$v,element($k,$data_db['content']),'m_gfc','show_change_gfc_cr');
+											$data_db['content'][$k] =$v ;
+											
+											break;
+											
+										default:
+											if( (element($k,$data_db['content']) || element($k,$data_db['content']) == '0' )
+									         && isset($GLOBALS[$this->model_name]['text'][$k][$v]) )
+											$data_db['content'][$k]=$GLOBALS[$this->model_name]['text'][$k][element($k,$data_db['content'])];
+									
+											$data_out['log']['content['.$k.']']='变更前:'.element($k,$data_db['content']);
+											$data_db['content'][$k] =$v ;
+									}
+								}
+							}
+						}
+					}
+					else 
+					{
+						//批量编辑
+						if(  element('flag_edit_more', $data_get) )
+						{
+							$data_db['content'] = array();
+							break;
+						}
+						
+						//非数据库页面调用
+						if(  element('fun_no_db', $data_get) )
+						{
+							$data_db['content'] = json_decode(fun_urldecode($this->input->post('data_db')),TRUE);
+							break;
+						}
+						
+						$data_db['content'] = $this->get(element($this->pk_id,$data_get));
+						
+						$data_db['content_s'] = $this->m_gfc_secret->get_of_gfc(element($this->pk_id,$data_get));
+						
+						$data_db['content'] = array_merge($data_db['content_s'],$data_db['content']);
+						
+						if( empty($data_db['content'][$this->pk_id]) )
+						{
+							$msg= $this->title.'【'.element($this->pk_id,$data_get).'】不存在！';
+							
+							if($flag_more)
+							{
+								$rtn['result'] = FALSE;
+								$rtn['msg_err'] = $msg;
+									
+								if( $flag_more )
+								return $rtn;
+							}
+							
+							redirect('base/main/show_err/msg/'.fun_urlencode($msg));
+						}
+						
+						$data_db['wl_list']=$this->m_work_list->get_wl_to_do(element($this->pk_id,$data_get),$this->model_name);
+				
+						$data_db['content']['gfc_name_tm'] = element('gfcs_name_tm',$data_db['content']);
+						
+						//获取统计部门
+						$arr_search_link=array();
+						$arr_search_link['rows']=0;
+						$arr_search_link['field']='link_id';
+						$arr_search_link['from']='sys_link';
+						$arr_search_link['where']=" AND op_id = ? AND op_table = ? AND op_field = ? AND content = ?";
+						$arr_search_link['value'][]=element('gfc_id',$data_db['content']);
+						$arr_search_link['value'][]='pm_given_financial_code';
+						$arr_search_link['value'][]='gfc_id';
+						$arr_search_link['value'][]='gfc_ou_tj';
+						$rs_link=$this->m_db->query($arr_search_link);
+						$data_db['content']['gfc_ou_tj']=array();
+						$data_db['content']['gfc_ou_tj_data']=array();
+						
+						if(count($rs_link['content'])>0)
+						{
+							foreach ( $rs_link['content'] as $v ) {
+								$data_db['content']['gfc_ou_tj'][]=$v['link_id'];
+								
+								$data_db['content']['gfc_ou_tj_data'][]=array(
+									'id'=>$v['link_id'],
+									'text'=>$this->m_base->get_field_where('sys_ou','ou_name'," AND ou_id = '{$v['link_id']}'")
+								);
+							}
+						}
+						
+						$data_db['content']['gfc_ou_tj_data']=json_encode($data_db['content']['gfc_ou_tj_data']);
+
+						//项目组成员
+						$arr_search=array();
+						$arr_search['field']='pmc.*,c.c_name,c.c_login_id,c.c_tel';
+						$arr_search['from']="pm_contact pmc
+											 LEFT JOIN sys_contact c ON
+											 (c.c_id = pmc.pmc_c_id)";
+						$arr_search['where']=' AND gfc_id = ? ';
+						$arr_search['value'][]=element('gfc_id',$data_get);
+						$arr_search['sort']=array("pmc_type");
+						$arr_search['order']=array('asc');
+						
+						$rs=$this->m_db->query($arr_search);
+
+						$data_db['content']['pm_c'] = array();
+						
+						if(count($rs['content'])>0)
+						{
+							foreach ($rs['content'] as $v) {
+								$v['pmc_c_id_s'] = $v['c_name'];
+								if($v['c_login_id']) $v['pmc_c_id_s'] .='['.$v['c_login_id'].']';
+								elseif($v['c_tel']) $v['pmc_c_id_s'] .='['.$v['c_tel'].']';
+								
+								$v['pmc_c_tel'] = $v['c_tel'];
+								
+								$arr_tmp = explode(',',$v['pmc_type']);
+								$v['pmc_type_s'] = '';
+								foreach ($arr_tmp as $v1) {
+									$v['pmc_type_s'].=element($v1, $GLOBALS['m_gfc']['text']['pmc_type']).',';
+								}
+								$v['pmc_type_s'] = trim($v['pmc_type_s'],',');
+								$data_db['content']['pm_c'][]=$v;
+							}
+						}
+						$data_db['content']['pm_c'] = json_encode($data_db['content']['pm_c']);
+						
+						//获取开票回款计划
+						$arr_search=array();
+						$arr_search['field']='*';
+						$arr_search['from']="pm_bill_plan";
+						$arr_search['where']=' AND gfc_id = ? ';
+						$arr_search['value'][]=element('gfc_id',$data_get);
+						$arr_search['sort']=array("bp_time");
+						$arr_search['order']=array('asc');
+						
+						$rs=$this->m_db->query($arr_search);
+
+						$data_db['content']['gfc_bp'] = array();
+						
+						$bp_sum_all = 0;
+						
+						if(count($rs['content'])>0)
+						{
+							foreach ($rs['content'] as $v) {
+								$bp_sum_all+=$v['bp_sum'];
+								$v['bp_type_s'] = element($v['bp_type'], $GLOBALS['m_bp']['text']['bp_type']);
+								$data_db['content']['gfc_bp'][]=$v;
+							}
+						}
+						$data_db['content']['gfc_bp'] = json_encode($data_db['content']['gfc_bp']);
+						$data_db['content']['gfc_bp_sum'] = $data_db['content']['gfc_sum'];
+						$data_db['content']['gfc_bp_sum_remain'] = $data_db['content']['gfc_sum'] - $bp_sum_all;
+						$data_db['content']['gfc_bp_prog'] = 0;
+						if($data_db['content']['gfc_sum'] != 0 )
+						$data_db['content']['gfc_bp_prog'] = $bp_sum_all/$data_db['content']['gfc_sum']*100 ;
+						$data_db['content']['gfc_bp_prog_text'] = '已分解金额:'.$bp_sum_all;
+						
+						//获取设备清单
+						$arr_search=array();
+						$arr_search['field']='*';
+						$arr_search['from']="pm_eq_list_item";
+						$arr_search['where']=' AND eli_gfc_id = ? ';
+						$arr_search['value'][]=element('gfc_id',$data_get);
+						$arr_search['sort']=array("eli_type");
+						$arr_search['order']=array('asc');
+						
+						$rs=$this->m_db->query($arr_search);
+
+						$data_db['content']['gfc_eli'] = array();
+						$check_el = FALSE;
+						if(count($rs['content'])>0)
+						{
+							foreach ($rs['content'] as $v) {
+								$v['eli_sub_s'] = $this->m_base->get_field_where('fm_subject','sub_name', " AND sub_id = '{$v['eli_sub']}'");
+								$v['eli_supply_org_s'] = $this->m_base->get_field_where('sys_org','o_name', " AND o_id = '{$v['eli_supply_org']}'");
+								$v['eli_c_pr_s'] = $this->m_base->get_c_show_by_cid($v['eli_c_pr']);
+								$data_db['content']['gfc_eli'][]=$v;
+							}
+							$check_el = TRUE;
+						}
+						$data_db['content']['gfc_eli'] = json_encode($data_db['content']['gfc_eli']);
+						
+						//预算表
+						$arr_search=array();
+						$arr_search['field']='gbud_id,gbud_budi_id,gbud_sum_start,gbud_sum';
+						$arr_search['from']="fm_gfc_bud";
+						$arr_search['where']=' AND gfc_id = ? ';
+						$arr_search['value'][]=element('gfc_id',$data_get);
+						$arr_search['sort']=array("db_time_create");
+						$arr_search['order']=array('asc');
+						
+						$rs=$this->m_db->query($arr_search);
+
+						$data_db['content']['gfc_bud_sum'] = array();
+						
+						if( count($rs['content'])>0 )
+						{
+							foreach ($rs['content'] as $k=>$v) {
+								
+								$v['budi_id'] = $v['gbud_budi_id'];
+								$v['budi_sum_start'] = $v['gbud_sum_start'];
+								$v['budi_sum'] = $v['gbud_sum'];
+								$data_db['content']['gfc_bud_sum'][]=$v;
+							}
+						}
+						
+						$data_db['content']['gfc_bud_sum'] = json_encode($data_db['content']['gfc_bud_sum']);
+						
+						//合同评审人
+						$arr_search=array();
+						$arr_search['field']='gfcc_id
+											 ,gfcc_cr_id
+											 ,gfcc_c_id
+											 ,gfcc_result
+											 ,gfcc_default
+											 ,gfcc_comment
+											 ,gfcc_comment_return
+											 ,gfcc.db_person_create
+											 ,cr_name
+											 ,cr_ppo
+											 ,cr_sn
+											 ,cr_link_field
+											 ,cr_person_empty
+											 ,cr_pass_alter
+											 ,c_name
+											 ,c_login_id
+											 ,c_tel
+											 ,ou_name gfcc_ou';
+						$arr_search['from']="pm_gfc_cr gfcc
+										     LEFT JOIN pm_contract_review cr ON
+										     (cr.cr_id = gfcc.gfcc_cr_id)
+										     LEFT JOIN sys_contact c ON
+										     (c.c_id = gfcc.gfcc_c_id)
+										     LEFT JOIN sys_ou ou ON
+										     (ou.ou_id = c.c_ou_bud)";
+						$arr_search['where']=' AND gfc_id = ? ';
+						$arr_search['value'][]=element('gfc_id',$data_get);
+						$arr_search['sort']=array("cr_sn");
+						$arr_search['order']=array('asc');
+						
+						$rs=$this->m_db->query($arr_search);
+
+						$data_db['content']['gfc_cr'] = array();
+						
+						$min_ppo = 0;
+						
+						if(count($rs['content'])>0)
+						{
+							foreach ($rs['content'] as $v) {
+								$v['gfcc_comment'] = fun_urlencode($v['gfcc_comment']);
+								$v['gfcc_comment_return'] = fun_urlencode($v['gfcc_comment_return']);
+								
+								$v['gfcc_c_id_start'] = $v['gfcc_c_id'];
+								
+								$v['gfcc_cr_id_s'] = $v['cr_name'];
+								
+								$v['gfcc_c_id_s'] = $v['c_name'];
+								
+								$v['gfcc_result_s'] = element($v['gfcc_result'], $GLOBALS['m_gfc']['text']['gfcc_result']);
+								
+								if($v['c_login_id']) $v['gfcc_c_id_s'] .= '['.$v['c_login_id'].']';
+								elseif($v['c_tel']) $v['gfcc_c_id_s'] .= '['.$v['c_tel'].']';
+								
+								if( strstr($v['cr_link_field'], '1') != Null
+								 && $check_el )
+								{
+									$v['cr_person_empty'] = 0;
+									$v['gfcc_default'] = 1;
+								}
+								
+								$data_db['content']['gfc_cr'][]=$v;
+								
+								if( $v['gfcc_result'] )
+								$data_db['content']['gfcc_result'] = $v['gfcc_result'];
+								
+								if( ( $min_ppo == 0 || $min_ppo > $v['cr_ppo'])
+								  && $v['gfcc_result'] != GFCC_RESULT_YES && $v['gfcc_result'] != GFCC_RESULT_ALTER)
+							    {
+							  		$min_ppo = $v['cr_ppo'];
+							    }
+							}
+						}
+						$data_db['content']['gfc_cr'] = json_encode($data_db['content']['gfc_cr']);
+					}
+					
+					if( ! empty(element('gfc_c_jia', $data_db['content']) ) )
+					{
+						$gfc_c_jia_s = $this->m_base->get_c_show_by_cid($data_db['content']['gfc_c_jia']);
+						
+						$arr_tmp = array();
+						$arr_tmp[$data_db['content']['gfc_c_jia']] = $gfc_c_jia_s;
+						$data_out['json_field_define']['gfc_c_jia']=get_html_json_for_arr($arr_tmp);
+						
+						$data_db['content']['gfc_c_jia_tel'] =  $this->m_base->get_field_where('sys_contact','c_tel'," AND c_id = '{$data_db['content']['gfc_c_jia']}'");
+					}
+					
+				} catch (Exception $e) {
+				}
+				
+				$data_db['content']['gfc_c_s'] = $this->m_base->get_c_show_by_cid($data_db['content']['gfc_c']);
+				$data_db['content']['gfc_ou_s'] = $this->m_base->get_field_where('sys_ou','ou_name', " AND ou_id ='{$data_db['content']['gfc_ou']}'");
+				$data_db['content']['gfc_c_tj_s'] = $this->m_base->get_c_show_by_cid($data_db['content']['gfc_c_tj']);
+				$data_db['content']['gfc_org_jia_s'] = $this->m_base->get_field_where('sys_org','o_name', " AND o_id ='{$data_db['content']['gfc_org_jia']}'");
+				
+				if(element('gfc_area', $data_db['content']))
+				{
+					$arr_tmp = explode(',', $data_db['content']['gfc_area']);
+					$data_db['content']['gfc_area'] = element(0, $arr_tmp);
+					$data_db['content']['gfc_area_1'] = element(1, $arr_tmp);
+					$data_db['content']['gfc_area_2'] = element(2, $arr_tmp);
+				}
+			break;
+		}
+		
+		/************工单信息*****************/
+		
+		//工单控件展示标记
+		$data_out['flag_wl'] = FALSE;
+		$data_out['pp_id']=$this->model_name;
+		
+		$data_out['ppo_btn_next']='通过';
+		$data_out['ppo_btn_pnext']='退回';
+		
+		switch (element('ppo', $data_db['content'])) {
+			case GFC_PPO_START:
+				$data_out['ppo_btn_next']='提交';
+				break;
+			case GFC_PPO_REVIEW:
+				$data_out['ppo_btn_next']='评审';
+				break;
+			case GFC_PPO_CODE:
+				$data_out['ppo_btn_next']='生成编号';
+				break;
+			case GFC_PPO_UPLOAD:
+				$data_out['ppo_btn_next']='合同已归';
+				break;
+			case GFC_PPO_RETURN:
+				$data_out['ppo_btn_next']='审核通过';
+				break;
+		}
+				
+		if( $data_get['act'] == STAT_ACT_EDIT 
+		 && element('ppo', $data_db['content']) != GFC_PPO_END )
+		{
+			$data_out['flag_wl'] = TRUE;
+		}
+		
+		$data_out=$this->m_work_list->get_wl_info($data_out,$data_db);
+
+		/************权限验证*****************/
+		//@todo 权限验证
+		$acl_list= $this->m_proc_gfc->get_acl();
+		
+		if( ! empty (element('acl_wl_yj', $data_out)) ) 
+		$acl_list= $acl_list | $data_out['acl_wl_yj'];
+
+		$this->check_acl($data_db,$acl_list);
+		
+		/************显示配置*****************/
+		//@todo 显示配置
+		$title_field='-'.element('gfc_name',$data_db['content']);;
+		
+		switch ($data_get['act']) {
+			case STAT_ACT_CREATE:
+				$data_out['title']='创建'.$this->title;
+
+				$data_out['op_disable'][]='btn_import';
+				
+				$data_out['op_disable'][]='btn_del';
+				$data_out['op_disable'][]='btn_log';
+				
+				$data_out['op_disable'][]='btn_next';
+				$data_out['op_disable'][]='btn_pnext';
+				
+				$data_out['op_disable'][]='btn_wl';
+				$data_out['op_disable'][]='btn_im';
+				$data_out['op_disable'][]='btn_file';
+				
+				$data_out['op_disable'][]='title_cr_file';
+				
+				//创建默认值
+				$data_db['content']['ppo'] = GFC_PPO_START;
+				
+				$data_db['content']['gfc_org'] = $this->sess->userdata('c_org');
+				$data_db['content']['gfc_c'] = $this->sess->userdata('c_id');
+				$data_db['content']['gfc_c_s'] = $this->m_base->get_c_show_by_cid($this->sess->userdata('c_id'));
+				$data_db['content']['gfc_ou'] = $this->sess->userdata('c_ou_bud');
+				$data_db['content']['gfc_ou_s'] = $this->m_base->get_field_where('sys_ou','ou_name', " AND ou_id ='{$data_db['content']['gfc_ou']}'");
+				$data_db['content']['gfc_category_subc'] = BUDM_TYPE_SUBC_NO;
+				$data_db['content']['gfc_category_secret'] = GFC_CATEGORY_SECRET_FM;
+				$data_db['content']['gfc_category_cooperation'] = BASE_N;
+				$data_db['content']['gfc_category_contract'] = BASE_N;
+				$data_db['content']['gfc_category_bill'] = BASE_Y;
+				$data_db['content']['gfc_ou_tj'] = array();
+				
+				$data_db['content']['gfc_el_verson'] = 1;
+				
+				$data_db['content']['gfc_bud_verson'] = 1;
+				
+				$data_db['content']['gfc_cr_verson'] = 1;
+				
+				//个性化配置
+				$data_out['url_conf']=str_replace('/', '-', $this->url_conf);
+				
+				//创建个性化配置
+				$path_conf_person=PATH_PERSON_CONF.'/create/'.$data_out['url_conf'].'/'.$this->sess->userdata('a_login_id');
+				
+				$conf_person=array();
+				if(file_exists($path_conf_person))
+				{
+					$conf_person=json_decode(file_get_contents($path_conf_person),TRUE);
+					$data_conf_person=json_decode(fun_urldecode(element('data', $conf_person)),TRUE);
+					
+					if(count($data_conf_person)>0)
+					{
+						foreach ($data_conf_person as $k=>$v) {
+							$arr_f=split_table_field($k);
+							$data_db[$arr_f['table']][$arr_f['field']]=$v;
+						}
+					}
+				}
+				
+				//GET参数赋值
+				if(count($data_out['field_edit'])>0)
+				{
+					foreach ($data_out['field_edit'] as $v) {
+						$arr_tmp=split_table_field($v);
+						if(element($arr_tmp['field'] ,$data_get))
+						$data_db['content'][$arr_tmp['field']]=element($arr_tmp['field'] ,$data_get);
+					}
+				}
+
+			break;
+			case STAT_ACT_EDIT:
+				$data_out['title']='编辑'.$this->title.$title_field;
+				
+				$data_out['op_disable'][]='btn_person';
+				$data_out['op_disable'][]='btn_import';
+				
+				if(element('gfcs_id', $data_db['content']))
+				{
+					$data_out['field_view']=array_unique(array_merge($data_out['field_view'],array(
+						'content[gfc_category_secret]',
+						'content[gfc_name_tm]',
+						'content[gfcs_c_check]',
+					)));
+				}
+				
+				
+			break;
+			case STAT_ACT_VIEW:
+				$data_out['title']='查看'.$this->title.$title_field;
+				
+				$data_out['op_disable'][]='btn_save';
+				$data_out['op_disable'][]='btn_del';
+				$data_out['op_disable'][]='btn_person';
+				$data_out['op_disable'][]='btn_import';
+				
+				$data_out['op_disable'][]='btn_next';
+				$data_out['op_disable'][]='btn_pnext';
+				
+				$data_out['field_view']=array_unique(array_merge($data_out['field_view'],$data_out['field_edit']));
+				
+			break;
+		}
+		
+		//@todo 节点权限显示隐藏
+		$data_out['ppo_name_after'] = '';
+		$data_out['min_ppo'] = '';
+		$data_out['gfcc_result'] = element('gfcc_result', $data_db['content']);
+		if( element( 'ppo',$data_db['content']) == 1 )
+		{
+			$data_out['op_disable'][]='btn_pnext';
+		}
+		
+		if( element( 'ppo',$data_db['content']) != 1 )
+		{
+			$data_out['op_disable'][]='btn_del';
+		}
+		
+		if( element( 'ppo',$data_db['content']) != 0 
+		 && element( 'ppo',$data_db['content']) < GFC_PPO_CODE )
+		{
+			$data_out['op_disable'][]='title_check';
+		}
+		
+		if( element('gfc_category_secret', $data_db['content']) != GFC_CATEGORY_SECRET_FM 
+		  || ( element( 'ppo',$data_db['content']) != 0 
+		    && element( 'ppo',$data_db['content']) < GFC_PPO_UPLOAD )
+		 )
+		{
+			$data_out['op_disable'][]='title_return_file';
+		}
+		
+		if( element( 'ppo',$data_db['content']) == GFC_PPO_REVIEW )
+		{
+			$data_out['op_disable'][]='btn_pnext';
+			
+			if( isset($min_ppo) && $min_ppo > 0 )
+			$data_out['ppo_name_after'] = " 第".$min_ppo."阶段";
+			$data_out['min_ppo'] = $min_ppo;
+		}
+		
+		if( element( 'ppo',$data_db['content']) > GFC_PPO_START )
+		{
+			if( element( 'ppo',$data_db['content']) != GFC_PPO_REVIEW
+			 || $min_ppo != 1 )
+			{
+				$data_out['field_view'] = array_unique(array_merge($data_out['field_view'],array(
+					'content[gfc_finance_code]',
+					'content[gfc_time_node_sign]',
+					'content[gfc_ou_tj]',
+				
+					'content[gfc_org]',
+					'content[gfc_name]',
+					'content[gfc_org_jia_s]',
+					'content[gfc_org_jia]',
+					'content[gfc_c_jia]',
+					'content[gfc_c_jia_tel]',
+				
+					'content[gfc_c_s]',
+					'content[gfc_c]',
+					'content[gfc_ou_s]',
+					'content[gfc_ou]',
+				
+					'content[gfc_category_contract]',
+					'content[gfc_sum]',
+					'content[gfc_pt_plan_sign]',
+					'content[gfc_category_main]',
+					'content[gfc_category_secret]',
+					'content[gfc_category_tiaoxian_main]',
+					'content[gfc_category_tiaoxian]',
+					'content[gfc_category_extra]',
+					'content[gfc_category_statistic]',
+					'content[gfc_category_subc]',
+					'content[gfc_category_cooperation]',
+					'content[gfc_area]',
+					'content[gfc_area_1]',
+					'content[gfc_area_2]',
+					'content[gfc_area_show]',
+					'content[gfc_note]',
+				
+					'content[pm_c]',
+				
+					'content[gfc_bp]',
+					'content[gfc_bp_sum_remain]',
+				
+					'content[gfc_eli]',
+				
+					'content[gfc_start_time_sign]',
+					'content[gfc_complet_time_sign]',
+					'content[gfc_budm_id]',
+					'content[gfc_bud_sum]',
+					'content[gfc_tax]',
+					'content[budi]',
+				
+					'content[gfc_name_tm]',
+				)));
+				
+			}
+			
+			if( element( 'ppo',$data_db['content']) != GFC_PPO_REVIEW)
+			{
+				$data_out['field_view'] = array_unique(array_merge($data_out['field_view'],array(
+					'content[gfc_cr]',
+				)));
+			}
+			
+			if( element( 'ppo',$data_db['content']) !=GFC_PPO_RETURN)
+			{
+				$data_out['op_disable'][]='btn_pnext';
+			}
+		}
+		
+		if( element( 'ppo',$data_db['content']) == GFC_PPO_CODE )
+		{
+			$data_out['field_view'] = array_diff($data_out['field_view'],array(
+				'content[gfc_time_node_sign]',
+				'content[gfc_ou_tj]',
+			));
+			
+			$data_out['field_required'][] = 'content[gfc_time_node_sign]';
+			$data_out['field_required'][] = 'content[gfc_ou_tj]';
+			
+			if(empty(element('gfc_time_node_sign', $data_db['content'])))
+			$data_db['content']['gfc_time_node_sign'] = date("Y-m-d");
+		}
+		
+		if( $data_get['act'] == STAT_ACT_EDIT
+		&& element( 'ppo',$data_db['content']) == 0  )
+		{
+			if( ($acl_list & pow(2,ACL_PROC_GFC_SUPER) ) == 0)
+			{
+				$data_out['op_disable'][]='btn_save';
+				$data_out['op_disable'][]='btn_del';
+			}
+			else 
+			{
+				$data_out['op_disable'] = array_values(array_unique($data_out['op_disable']));
+				$data_out['op_disable'] =  array_diff($data_out['op_disable'],array(
+					'btn_del'
+				));
+			}
+			
+			$data_out['op_disable'][]='btn_next';
+			$data_out['op_disable'][]='btn_pnext';
+		}
+		
+		//批量编辑
+		if(element('flag_edit_more', $data_get))
+		{
+			$data_out['field_required']=array();
+			
+			$data_out['op_disable'][] = 'content[gfc_finance_code]';
+			$data_out['op_disable'][] = 'content[gfc_name]';
+			
+			$data_out['op_disable'][]='btn_log';
+			$data_out['op_disable'][]='btn_del';
+			
+			$data_out['op_disable'][]='btn_wl';
+			$data_out['op_disable'][]='btn_im';
+			$data_out['op_disable'][]='btn_file';
+			
+			$data_out['op_disable'][]='btn_next';
+			$data_out['op_disable'][]='btn_pnext';
+			
+			$data_out['title'] = '批量编辑'.$this->title.'-请勾选要保存的字段';
+		}
+		elseif( element( 'ppo',$data_db['content']) == GFC_PPO_END )
+		{
+			$data_out['field_view'] = array_unique(array_merge($data_out['field_view'],$data_out['field_edit']));
+		}
+
+		/************事件处理*****************/
+
+		if(in_array('btn_'.$btn,$data_out['op_disable']))
+		{
+			$rtn['result'] = FALSE;
+			
+			if($btn == 'del')
+			$rtn['msg_err'] = '禁止删除！';
+			
+			$rtn['err'] = array();
+				
+			if( $flag_more )
+			return $rtn;
+					
+			exit;
+		}
+		
+		switch ($btn)
+		{
+			case 'save':
+			case 'next':
+			case 'pnext':
+			case 'yj':
+				
+				$rtn=array();//结果
+				$check_data=TRUE;
+				$link_file_check = '';
+				/************数据验证*****************/
+				//@todo 数据验证
+				if( $btn == 'yj' 
+				 && empty(element('person_yj' ,$data_post['content'])))
+				{
+					$rtn['err']['msg']='请选择移交人！';
+					$check_data=FALSE;
+				}
+				
+				if( $btn == 'next'
+				 && element('ppo', $data_db['content']) == GFC_PPO_UPLOAD )
+				{
+					//非涉密项目，验证上传归档合同
+					if( element('gfc_category_secret', $data_post['content']) == GFC_CATEGORY_SECRET_FM )
+					{
+						$arr_search=array();
+						$arr_search['field']='f_t_id';
+						$arr_search['from']="sys_file_type";
+						$arr_search['where']= " AND f_t_check = ? ";
+						$arr_search['value'][]=F_T_CHECK_GFC_RETURN;
+						$rs=$this->m_db->query($arr_search);
+						
+						if(count($rs['content']) > 0 )
+						{
+							foreach ($rs['content'] as $v) {
+								$link_file_check .= $v['f_t_id'].','; 
+							}
+							
+							$link_file_check = trim($link_file_check,',');
+						}
+					}
+				}
+				
+				if($btn == 'save' || $btn == 'next')
+				{
+					if( element('gfc_category_secret', $data_post['content']) != GFC_CATEGORY_SECRET_FM )
+					{
+						$data_out['field_required'][] = 'content[gfc_name_tm]';
+					}
+					
+					//必填验证
+					if(count($data_out['field_required'])>0)
+					{
+						foreach ($data_out['field_required'] as $v) {
+							
+							$arr_tmp=split_table_field($v);
+							
+							if( ! is_array(element('content', $data_post)) 
+							 || (
+							 		empty(element($arr_tmp['field'],$data_post['content']))
+							 	 && element($arr_tmp['field'],$data_post['content']) != '0'
+							 	)
+							 )
+							$data_post['content'][$arr_tmp['field']] = element($arr_tmp['field'],$data_db['content']);
+							
+							if( empty(element($arr_tmp['field'],$data_post['content'])) 
+							 && element($arr_tmp['field'],$data_post['content']) != '0'
+							 )
+							{
+								$field_s='';
+								if(isset($this->table_form['fields'][$arr_tmp['field']]))
+								$field_s = $this->table_form['fields'][$arr_tmp['field']]['comment'];
+								elseif(count($this->arr_table_form)>0)
+								{
+									foreach ($this->arr_table_form as $k=>$v1) {
+										
+										if(isset($v1['fields'][$arr_tmp['field']]))
+										{
+											$field_s = $v1['fields'][$arr_tmp['field']]['comment'];
+											break;
+										}
+									}
+								}
+								
+								$rtn['err']['content['.$arr_tmp['field'].']']='请输入'.$field_s.'！';
+								$check_data=FALSE;
+							}
+						}
+					}
+					
+					if( $btn == 'next'
+					 && element('ppo', $data_db['content']) == GFC_PPO_START )
+					{
+						if( element('gfc_bp_sum_remain', $data_post['content']) != 0 )
+						{
+							$rtn['err']['content[gfc_bp]']='开票回款计划未分解完毕！';
+							$check_data=FALSE;
+						}
+						
+						if( empty( element('gfc_tax', $data_post['content'])))
+						{
+							$rtn['err']['content[gfc_bud]']='预算表未选择流转税！';
+							$check_data=FALSE;
+						}
+						
+						$link_file_check = '';
+						
+						//非涉密项目，验证上传合同
+						if( element('gfc_category_secret', $data_post['content']) == GFC_CATEGORY_SECRET_FM )
+						{
+							if(element('gfc_category_contract', $data_post['content']) != BASE_Y )
+							{
+								$arr_search=array();
+								$arr_search['field']='f_t_id';
+								$arr_search['from']="sys_file_type";
+								$arr_search['where']= " AND f_t_check = ? ";
+								$arr_search['value'][]=F_T_CHECK_GFC_REVIEW;
+								$rs=$this->m_db->query($arr_search);
+								
+								if(count($rs['content']) > 0 )
+								{
+									foreach ($rs['content'] as $v) {
+										$link_file_check .= $v['f_t_id'].','; 
+									}
+								}
+							}
+							
+							if( ! empty(element('gfc_cr',$data_post['content'])) )
+							{
+								$arr_tmp = element('gfc_cr',$data_post['content']);
+											
+								if( ! is_array($arr_tmp) )
+								$arr_tmp = json_decode($arr_tmp,TRUE);
+								
+								if( count($arr_tmp) > 0)
+								{
+									$arr_cr_id = array();
+									
+									foreach ($arr_tmp as $v) {
+										$arr_cr_id[] = $v['gfcc_cr_id'];
+									}
+									
+									//验证是否存在必须上传文件
+									$arr_search=array();
+									$arr_search['field']='cr_link_file';
+									$arr_search['from']="pm_contract_review";
+									$arr_search['where']= " AND cr_id IN ? AND cr_link_file IS NOT NULL AND cr_link_file != '' ";
+									$arr_search['value'][] = $arr_cr_id;
+									
+									$rs=$this->m_db->query($arr_search);
+									
+									if(count($rs['content'])>0)
+									{
+										foreach ($rs['content'] as $v) {
+											$link_file_check .= $v['cr_link_file'].','; 
+										}
+									}
+								}
+							}
+							
+							if( ! empty($link_file_check) )
+							{
+								$link_file_check = trim($link_file_check,',');
+								
+								$arr_tmp = explode(',', $link_file_check);
+								$arr_search=array();
+								$arr_search['field']='lt.link_id';
+								$arr_search['from']="sys_link lf
+													 LEFT JOIN sys_link lt ON
+													 (lt.op_id = lf.link_id AND lt.content = 'f_type') ";
+								$arr_search['where']= " AND lf.op_id = ? AND lf.content = 'link_file' AND lt.link_id IN ? GROUP BY lt.link_id";
+								$arr_search['value'][] = element($this->pk_id,$data_get);
+								$arr_search['value'][] = $arr_tmp ;
+								$rs=$this->m_db->query($arr_search);
+								//暂时注释
+//								if(count($rs['content']) !=  count($arr_tmp) )
+//								{
+//									$rtn['err']['file']='请补全需要上传的文件(';
+//
+//									foreach ($rs['content'] as $v) {
+//										$arr_tmp = array_diff($arr_tmp, array($v['link_id']));
+//									}
+//
+//									foreach ($arr_tmp as $v) {
+//										$rtn['err']['file'].= $this->m_base->get_field_where('sys_file_type','f_t_name'," AND f_t_id = '{$v}'").',';
+//									}
+//
+//									$rtn['err']['content[gfc_cr_file]']=$rtn['err']['file']=trim($rtn['err']['file'],',').')';
+//									$check_data=FALSE;
+//								}
+							}
+						
+						}
+						
+						if( ! empty( element('gfc_name_tm', $data_post['content']))
+						&& ( ! is_array( element('content_s', $data_db) ) 
+						   || element('ppo', $data_db['content_s']) != 0 
+						   )
+						)
+						{
+							$rtn['err']['content[gfcs_c_check]']='标密申请流程尚未结束，无法进入评审流程！';
+							$check_data=FALSE;
+						}
+					}
+					
+					if( $btn == 'next'
+					 && element('ppo', $data_db['content']) == GFC_PPO_REVIEW )
+					{
+						if( ! empty(element('gfc_cr',$data_post['content'])) )
+						{
+							$arr_tmp = element('gfc_cr',$data_post['content']);
+										
+							if( ! is_array($arr_tmp) )
+							$arr_tmp = json_decode($arr_tmp,TRUE);
+							
+							if( count($arr_tmp) > 0)
+							{
+								foreach ($arr_tmp as $v) {
+									if( $v['gfcc_c_id'] == $this->sess->userdata('c_id') 
+									 && $v['cr_ppo'] == $data_out['min_ppo']
+									 && ! $v['gfcc_result'] )
+									{
+										$rtn['err']['content[gfc_cr]'][] = array(
+											'id' => $v['gfcc_id'],
+											'field' => 'gfcc_result',
+											'act' => STAT_ACT_EDIT,
+											'value_old' => '请填写评审结果',
+											'err_msg'=>'请填写评审结果'
+										);
+										
+										$check_data=FALSE;
+									}
+								}
+							}
+						}
+					}
+					
+					if( $btn == 'next'
+					 && element('ppo', $data_db['content']) == GFC_PPO_UPLOAD )
+					{
+						//非涉密项目，验证上传归档合同
+						if( element('gfc_category_secret', $data_post['content']) == GFC_CATEGORY_SECRET_FM )
+						{
+							if( ! empty($link_file_check) )
+							{
+								$link_file_check = trim($link_file_check,',');
+								
+								$arr_tmp = explode(',', $link_file_check);
+								$arr_search=array();
+								$arr_search['field']='lt.link_id';
+								$arr_search['from']="sys_link lf
+													 LEFT JOIN sys_link lt ON
+													 (lt.op_id = lf.link_id AND lt.content = 'f_type') ";
+								$arr_search['where']= " AND lf.op_id = ? AND lf.content = 'link_file' AND lt.link_id IN ? GROUP BY lt.link_id";
+								$arr_search['value'][] = element($this->pk_id,$data_get);
+								$arr_search['value'][] = $arr_tmp ;
+								$rs=$this->m_db->query($arr_search);
+								
+								if(count($rs['content']) !=  count($arr_tmp) )
+								{
+									$rtn['err']['file']='请补全需要上传的文件(';
+									
+									foreach ($rs['content'] as $v) {
+										$arr_tmp = array_diff($arr_tmp, array($v['link_id']));
+									}
+									
+									foreach ($arr_tmp as $v) {
+										$rtn['err']['file'].= $this->m_base->get_field_where('sys_file_type','f_t_name'," AND f_t_id = '{$v}'").',';
+									}
+									
+									$rtn['err']['content[gfc_return_file]']=$rtn['err']['file']=trim($rtn['err']['file'],',').')';
+									$check_data=FALSE;
+								}
+							}
+						}
+					}
+				}
+				
+				if( ! $check_data)
+				{
+					$rtn['result']=FALSE;
+					
+					if( $flag_more )
+					{
+						$rtn['msg_err']='';
+						foreach($rtn['err'] as $v )
+						{
+							$rtn['msg_err'].=$v.'<br/>';
+						}
+						
+						return $rtn;
+					}
+					
+					echo json_encode($rtn);
+					exit; 
+				}
+				
+				if(element('fun_no_db', $data_get))
+				{
+					$rtn['rtn']=TRUE;
+					echo json_encode($rtn);
+					exit; 
+				}
+				
+				/************数据处理*****************/
+				
+				$data_save['content']=$data_db['content'];
+				
+				$wl_comment='';
+				
+				if(count(element('content',$data_post))>0)
+				{
+					foreach ($data_post['content'] as $k=>$v) {
+						
+						if( element('flag_edit_more', $data_post) 
+						 && element($k.'_check', $data_post['content']) != 1 )
+						 continue;
+						 
+						if( ! in_array('content['.$k.']',$data_out['field_view'])
+						 && ! in_array('content['.$k.']',$data_out['op_disable'])
+						 && in_array('content['.$k.']',$data_out['field_edit']) )
+						$data_save['content'][$k]=$v;
+					}
+				}
+				
+				if( ! strstr(element('gfc_area', $data_save['content']),',') )
+				{
+					$data_save['content']['gfc_area']=$data_save['content']['gfc_area'].','.$data_save['content']['gfc_area_1'].','.$data_save['content']['gfc_area_2'];
+				}
+				
+				if( element('gfc_area', $data_db['content']) && ! strstr(element('gfc_area', $data_db['content']),',') )
+				{
+					$data_db['content']['gfc_area']=$data_db['content']['gfc_area'].','.$data_db['content']['gfc_area_1'].','.$data_db['content']['gfc_area_2'];
+				}
+				
+				if( ! empty(element('gfc_ou_tj',$data_save['content'])) )
+				{
+					if( ! is_array(element('gfc_ou_tj',$data_save['content'])) )
+					{
+						$data_save['content']['gfc_ou_tj'] = explode(',', $data_save['content']['gfc_ou_tj']);
+					}
+				}
+				
+				if( ! empty(element('gfc_bud_sum',$data_save['content'])) )
+				{
+					if( ! is_array(element('gfc_bud_sum',$data_save['content'])) )
+					$arr_tmp = json_decode($data_save['content']['gfc_bud_sum'],TRUE);
+					
+					if(count($arr_tmp) > 0)
+					{
+						foreach ($arr_tmp as $k=>$v) {
+							
+							foreach ($v as $k1=>$v1)
+							{
+								switch ($k1)
+								{
+									case 'gbud_id':
+										break;
+									case 'budi_id':
+										$v['gbud_budi_id'] = $v['budi_id'];
+										break;
+									case 'gbud_budi_id':
+										break;
+									case 'budi_sub':
+										$v['gbud_sub'] = $v['budi_sub'];
+										break;
+									case 'gbud_sub':
+										break;
+									case 'budi_sum':
+										$v['gbud_sum'] = $v['budi_sum'];
+										break;
+									case 'gbud_sum':
+										break;
+									case 'budi_sum_start':
+										$v['gbud_sum_start'] = $v['budi_sum_start'];
+										break;
+									case 'gbud_sum_start':
+										break;
+									default:
+										unset($arr_tmp[$k][$k1]);
+										break;
+								}
+							}
+							
+							if( element('ppo', $data_db['content']) == GFC_PPO_CODE 
+							 && $btn == 'next')
+							{
+								$v['gbud_sum_start'] = $v['gbud_sum'];
+							}
+						}
+						
+						$data_save['content']['gfc_bud_sum']=json_encode($arr_tmp);
+					}
+				}
+				
+				/************事件处理*****************/
+				switch ($data_get['act']) {
+					case STAT_ACT_CREATE:
+						
+						$data_save['content']['ppo']=GFC_PPO_START;
+						
+						$rtn=$this->add($data_save['content']);
+						
+						//项目组成员
+						if( ! empty(element('pm_c',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'gfc_id' => $rtn['id']
+							);
+
+							$this->m_base->save_datatable('pm_contact',
+								$data_save['content']['pm_c'],
+								'[]',
+								$arr_save);
+						}
+						
+						//开票回款计划
+						if( ! empty(element('gfc_bp',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'gfc_id' => $rtn['id']
+							);
+
+							$this->m_base->save_datatable('pm_bill_plan',
+								$data_save['content']['gfc_bp'],
+								'[]',
+								$arr_save);
+						}
+						
+						//设备清单
+						if( ! empty(element('gfc_eli',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'eli_gfc_id' => $rtn['id']
+							);
+
+							$this->m_base->save_datatable('pm_eq_list_item',
+								$data_save['content']['gfc_eli'],
+								'[]',
+								$arr_save);
+						}
+						
+						//预算表
+						if( ! empty(element('gfc_bud_sum',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'gfc_id' => $rtn['id']
+							);
+
+							$this->m_base->save_datatable('fm_gfc_bud',
+								$data_save['content']['gfc_bud_sum'],
+								'[]',
+								$arr_save,
+								'm_gfc',
+								'save_gfc_bud');
+						}
+						
+						//指定评审人
+						if( ! empty(element('gfc_cr',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'gfc_id' => $rtn['id']
+							);
+
+							$this->m_base->save_datatable('pm_gfc_cr',
+								$data_save['content']['gfc_cr'],
+								'[]',
+								$arr_save,
+								'm_gfc',
+								'save_gfc_cr');
+						}
+						
+						$data_save['content']['gfc_id'] = $rtn['id'];
+						
+						$this->m_gfc_secret->create_default_by_gfc($data_save['content']);
+						
+						//创建我的工单
+	    				$data_save['wl']['wl_id'] = $rtn['id'];
+	    				$data_save['wl']['wl_type'] = WL_TYPE_I;
+	    				$data_save['wl']['wl_code']=$data_save['content']['gfc_name'];
+		    			$data_save['wl']['wl_op_table']='pm_given_financial_code';
+		    			$data_save['wl']['wl_op_field']='gfc_id';
+		    			$data_save['wl']['op_id']=$rtn['id'];
+	    				$data_save['wl']['p_id']=$this->proc_id;
+	    				$data_save['wl']['pp_id']=$this->model_name;
+	    				$data_save['wl']['wl_proc']=$data_save['content']['ppo'];
+		    			$data_save['wl']['wl_url']=$this->url_conf.'/act/2';
+		    			$data_save['wl']['wl_note']='【'.$this->title.'】'
+		    				.','.$data_save['content']['gfc_name']
+		    				.','.$data_save['content']['gfc_sum']
+		    				.','.$this->m_base->get_c_show_by_cid($data_save['content']['gfc_c'])
+		    				.','.$this->m_base->get_field_where('sys_org','o_name'," AND o_id = '{$data_save['content']['gfc_org_jia']}'")
+		    				.','.$this->m_base->get_field_where('sys_ou','ou_name'," AND ou_id = '{$data_save['content']['gfc_ou']}'")
+		    				.','.$this->m_base->get_field_where('sys_org','o_name'," AND o_id = '{$data_save['content']['gfc_org']}'")
+		    				;
+	    				$data_save['wl']['c_accept'][] = $this->sess->userdata('c_id');
+	    				
+	    				$this->m_work_list->add($data_save['wl']);
+	    				
+	    				$data_save['wl']['wl_id']=get_guid();
+	    				$data_save['wl']['wl_type'] = 0 ;
+	    				$data_save['wl']['wl_event']='补全、提交单据';
+	    				$data_save['wl']['wl_proc'] = 1;
+	    				$this->m_work_list->add($data_save['wl']);
+	    				
+	    				$rtn['wl_i'][] = $this->sess->userdata('c_id');
+	    				$rtn['wl_accept'][] = $this->sess->userdata('c_id');
+	    				$rtn['wl_care']=array();
+	    				$rtn['wl_end'] = array();
+						
+						$arr_log_content=array();
+						$arr_log_content['new']['content']=$data_save['content'];
+						$arr_log_content['old']['content'][$this->pk_id]=$rtn['id'];
+						
+						//操作日志
+						$data_save['content_log']['op_id']=$rtn['id'];
+						$data_save['content_log']['log_act']=$data_get['act'];
+						$data_save['content_log']['log_url']=$this->url_conf.'/'.$this->pk_id.'/'.$rtn['id'];
+						$data_save['content_log']['log_content']=json_encode($arr_log_content);
+						$data_save['content_log']['log_module']=$this->title;
+						$data_save['content_log']['log_p_id']=$this->proc_id;
+						$this->m_log_operate->add($data_save['content_log']);
+						
+						break;
+					case STAT_ACT_EDIT:
+
+						//验证数据更新时间
+						if($data_save['content']['db_time_update'] != $data_db['content']['db_time_update'])
+						{
+							$rtn['result']=FALSE;
+							$rtn['err']['db_time_update']='后台数据刷新中，请重新操作！';
+							echo json_encode($rtn);
+							exit; 
+						}
+						
+						$data_save['content'][$this->pk_id]=element($this->pk_id,$data_get);
+						
+						//流程工单
+						$ppo_btn_text = $data_out['ppo_btn_next'];
+						if($btn == 'pnext')
+						$ppo_btn_text = $data_out['ppo_btn_pnext'];
+						
+						//工单基本信息
+						$data_save['wl']['wl_code']=$data_db['content']['gfc_finance_code'];
+						if( ! $data_save['wl']['wl_code'] )$data_save['wl']['wl_code'] = substr($data_save['content']['gfc_name'],0,80);
+		    			$data_save['wl']['wl_op_table']='pm_given_financial_code';
+		    			$data_save['wl']['wl_op_field']='gfc_id';
+		    			$data_save['wl']['op_id']=$data_save['content'][$this->pk_id];
+	    				$data_save['wl']['p_id']=$this->proc_id;
+	    				$data_save['wl']['pp_id']=$this->model_name;
+		    			$data_save['wl']['wl_url']=$this->url_conf.'/act/2';
+		    			$data_save['wl']['wl_proc']=$data_save['content']['ppo'];
+		    			$data_save['wl']['wl_time_end']=date('Y-m-d H:i:s',strtotime('+30 day'));
+		    			$data_save['wl']['c_accept'] = array();
+		    			$data_save['wl']['wl_note']='【'.$this->title.'】'
+		    				.','.$data_save['content']['gfc_name']
+		    				.','.$data_save['content']['gfc_sum']
+		    				.','.$this->m_base->get_c_show_by_cid($data_save['content']['gfc_c'])
+		    				.','.$this->m_base->get_field_where('sys_org','o_name'," AND o_id = '{$data_save['content']['gfc_org_jia']}'")
+		    				.','.$this->m_base->get_field_where('sys_ou','ou_name'," AND ou_id = '{$data_save['content']['gfc_ou']}'")
+		    				.','.$this->m_base->get_field_where('sys_org','o_name'," AND o_id = '{$data_save['content']['gfc_org']}'")
+		    				;
+						
+		    			//工单流转
+						$flag_wl_combine_finish=TRUE;//联合工单通过标记
+						$c_accept=array();
+						
+						switch (element('ppo',$data_db['content']))
+						{
+							case GFC_PPO_START:
+								
+								if($btn == 'next')
+								{
+									$data_save['content']['ppo'] = GFC_PPO_REVIEW;
+									
+									$data_save['content']['gfc_c_tj'] = $data_save['content']['gfc_c'];
+									
+									$data_save['wl']['wl_event']='合同评审';
+									
+									//添加流程接收人
+	    							$data_save['wl']['c_accept']=array();
+	    							
+									$arr_tmp = element('gfc_cr',$data_save['content']);
+									
+									if( ! is_array($arr_tmp) )
+									$arr_tmp = json_decode($arr_tmp,TRUE);
+									
+									if( count($arr_tmp) > 0)
+									{
+										$c_accept = array();
+										$min_ppo_n = 0;
+										foreach ($arr_tmp as $v) {
+											if($v['gfcc_c_id'])
+											$c_accept[$v['cr_ppo']][] = $v['gfcc_c_id'];
+											
+											if( $min_ppo_n == 0 || $v['cr_ppo'] < $min_ppo_n )
+											$min_ppo_n = $v['cr_ppo'];
+											
+											if( element('gfcc_comment_return', $v) 
+											 && $v['gfcc_result'] == GFCC_RESULT_NO )
+											{
+												if($wl_comment) $wl_comment.='<br>';
+												$v['gfcc_comment_return'] = $this->m_base->filter_img(fun_urldecode($v['gfcc_comment_return']));
+												$wl_comment.= $v['gfcc_cr_id_s'].' 反馈:'; 
+												$wl_comment.='<br>'. $v['gfcc_comment_return'] ;
+											} 
+											
+											$v['gfcc_result'] = '';
+										}
+										
+										$data_save['content']['gfc_cr']=json_encode($arr_tmp);
+										
+										$data_save['wl']['c_accept'] = array_unique(element($min_ppo_n,$c_accept));
+										
+										$data_save['wl']['wl_event']='第'.$min_ppo_n.'阶段合同评审';
+									}
+									
+									$this->m_file->update_link_noedit(element($this->pk_id,$data_get),'1',$link_file_check );
+								}
+								
+								break;
+							case GFC_PPO_REVIEW:
+								
+								$c_accept = array();
+								
+								if($btn == 'next')
+								{
+									$flag_wl_combine_finish = true;
+									
+									//验证联合工单是否全部完成
+									$arr_tmp = element('gfc_cr',$data_save['content']);
+									
+									if( ! is_array($arr_tmp) )
+									$arr_tmp = json_decode($arr_tmp,TRUE);
+									
+									if( count($arr_tmp) > 0)
+									{
+										$min_ppo_n = 0;
+										foreach ($arr_tmp as $v) {
+											
+											$v['gfcc_comment'] = $this->m_base->filter_img(fun_urldecode($v['gfcc_comment']));
+											
+											if($v['gfcc_result'] == GFCC_RESULT_NO)
+											{
+												$btn = 'pnext';
+												
+												$ppo_btn_text = '评审不通过';
+												
+												$flag_wl_combine_finish = false;
+												$data_save['content']['ppo'] = GFC_PPO_START;
+												$data_save['wl']['wl_event']='修改单据';
+												
+												$c_accept = array();
+												
+												if( ! in_array($data_db['content']['gfc_c'], $c_accept))
+												$c_accept[] = $data_db['content']['gfc_c'];
+												
+												if( ! in_array($data_db['content']['db_person_create'], $c_accept))
+												$c_accept[] = $data_db['content']['db_person_create'];
+											}
+											elseif( $v['gfcc_result'] != GFCC_RESULT_YES && $v['gfcc_result'] != GFCC_RESULT_ALTER 
+											     && $v['gfcc_c_id'] && $btn == 'next')
+											{
+												$ppo_btn_text = '评审通过';
+												
+												$flag_wl_combine_finish = false;
+												
+												if( $min_ppo_n == 0 || $v['cr_ppo'] < $min_ppo_n )
+												$min_ppo_n = $v['cr_ppo'];
+												
+												$c_accept[$v['cr_ppo']][] = $v['gfcc_c_id'];
+											}
+											
+											if( $v['gfcc_comment'] 
+											 && ($btn == 'next' || $btn == 'pnext') 
+											 && $v['cr_ppo'] == $min_ppo
+											 && $v['gfcc_c_id'] == $this->sess->userdata('c_id') )
+											{
+												if($wl_comment) $wl_comment.='<br>';
+												$wl_comment.= $v['gfcc_cr_id_s'].' <br>'; 
+												
+												if( $v['gfcc_result'] == GFCC_RESULT_YES) $wl_comment.='通过 评审意见:';
+												if( $v['gfcc_result'] == GFCC_RESULT_ALTER) $wl_comment.='修改后通过 评审意见:';
+												else $wl_comment.='不通过 评审意见:';
+												
+												$wl_comment.='<br>'.$v['gfcc_comment'] ;
+											}
+										}
+										
+										if( $btn == 'next')
+										{
+											$c_accept = element($min_ppo_n,$c_accept);
+											
+											if( ! is_array($c_accept) )
+											$c_accept = array();
+											
+											if(is_array($c_accept) && $min_ppo_n == $min_ppo )
+											$c_accept = array_diff($c_accept,array($this->sess->userdata('c_id')));
+											
+											$data_save['wl']['wl_event']='第'.$min_ppo_n.'阶段合同评审';
+											
+										}
+										elseif( $btn == 'pnext')
+										{
+											$data_save['content']['gfc_cr_verson']++;
+											$this->m_file->update_link_noedit(element($this->pk_id,$data_get),'0');
+										}
+										
+										$data_save['content']['gfc_cr']=json_encode($arr_tmp);
+									}
+									
+									if($flag_wl_combine_finish)
+									{
+										$data_save['content']['ppo'] = GFC_PPO_CODE;
+										
+										$data_save['wl']['wl_event']='生成编号';
+		    							
+										//添加流程接收人
+		    							$c_accept=$this->m_acl->get_acl_person($this->proc_id,ACL_PROC_GFC_CODE);
+		    							if( count($c_accept) > 0)
+		    							{
+			    							$arr_v=array();
+			    							$arr_v[]=$data_save['content']['gfc_org'];
+			    							$arr_v[]=$c_accept;
+			    							$c_accept=$this->m_base->get_field_where('sys_contact','c_id'
+			    							,"AND c_org = ? AND c_id IN ? ",$arr_v,1);
+		    							}
+									}
+								}
+								
+								//添加流程接收人
+    							$data_save['wl']['c_accept']=array_unique($c_accept);
+								
+								break;
+							case GFC_PPO_CODE:
+								
+								if($btn == 'next')
+								{
+									$data_save=$this->get_code($data_save);
+									
+									$data_save['content']['ppo'] = GFC_PPO_UPLOAD;
+									$data_save['content']['gfc_date_el_alter'] = date("Y-m-d");
+									$data_save['content']['gfc_date_bud_alter'] = date("Y-m-d");
+									
+									$data_save['wl']['wl_event']='合同待归';
+									
+									//添加流程接收人
+	    							$data_save['wl']['c_accept']=array();
+	    							
+									//添加流程接收人
+	    							$c_accept[] = $data_db['content']['gfc_c'];
+									$c_accept[] = $data_db['content']['db_person_create'];
+	    							
+								}
+								
+								//添加流程接收人
+    							$data_save['wl']['c_accept']=$c_accept;
+								
+								break;
+								
+							case GFC_PPO_UPLOAD:
+								
+								if($btn == 'next')
+								{
+									$data_save['content']['ppo'] = GFC_PPO_RETURN;
+									
+									$data_save['wl']['wl_event']='合同归还审核';
+									
+									//添加流程接收人
+	    							$data_save['wl']['c_accept']=array();
+	    							
+									//添加流程接收人
+	    							$c_accept=$this->m_acl->get_acl_person($this->proc_id,ACL_PROC_GFC_RETURN);
+	    							if( count($c_accept) > 0)
+	    							{
+		    							$arr_v=array();
+		    							$arr_v[]=$data_save['content']['gfc_org'];
+		    							$arr_v[]=$c_accept;
+		    							$c_accept=$this->m_base->get_field_where('sys_contact','c_id'
+		    							,"AND c_org = ? AND c_id IN ? ",$arr_v,1);
+	    							}
+	    							
+	    							$this->m_file->update_link_noedit(element($this->pk_id,$data_get),'1',$link_file_check );
+								}
+								
+								//添加流程接收人
+    							$data_save['wl']['c_accept']=$c_accept;
+								
+								break;
+							
+							case GFC_PPO_RETURN:
+								
+								if($btn == 'next')
+								{
+					    			$data_save['content']['ppo'] = GFC_PPO_END;
+								}
+								elseif( $btn == 'pnext')
+								{
+									$data_save['content']['ppo'] = GFC_PPO_UPLOAD;
+									
+									$data_save['wl']['wl_event']='修改归档合同';
+									
+									$c_accept = array();
+									
+									$c_accept[] = $data_db['content']['gfc_c'];
+									$c_accept[] = $data_db['content']['db_person_create'];
+									
+									$this->m_file->update_link_noedit(element($this->pk_id,$data_get),'0',$link_file_check );
+								}
+								
+								break;
+						}
+						
+						$rtn=$this->update($data_save['content']);
+						
+						//统计部门
+						if( is_array(element('gfc_ou_tj',$data_save['content'])) 
+						 && count( element('gfc_ou_tj',$data_save['content']) ) > 0 )
+						{
+							$cond_link=array();
+							$cond_link['op_id']=element($this->pk_id,$data_get);
+	        				$cond_link['op_table']='pm_given_financial_code';
+							$cond_link['op_field']='gfc_id';
+							$cond_link['content']='gfc_ou_tj';
+			        		$this->m_link->del_where($cond_link);
+			        		
+			        		$data_save['content']['gfc_ou_tj_data']=array();
+			        		
+							foreach ($data_save['content']['gfc_ou_tj'] as $v) {
+								$data_save['link']=array();
+								$data_save['link']['op_id']=element('gfc_id',$data_get);
+								$data_save['link']['op_table']='pm_given_financial_code';
+								$data_save['link']['op_field']='gfc_id';
+								$data_save['link']['content']='gfc_ou_tj';
+								$data_save['link']['link_id']=$v;
+								
+								$this->m_link->add($data_save['link']);
+								
+								$data_save['content']['gfc_ou_tj_data'][]=array(
+									'id'=>$v,
+									'text'=>$this->m_base->get_field_where('sys_ou','ou_name'," AND ou_id = '{$v}'")
+								);
+							}
+							
+							$data_save['content']['gfc_ou_tj_data']=json_encode($data_save['content']['gfc_ou_tj_data']);
+						}
+						
+						//项目组成员
+						if( ! empty(element('pm_c',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'gfc_id' => element('gfc_id',$data_get)
+							);
+
+							$this->m_base->save_datatable('pm_contact',
+								$data_save['content']['pm_c'],
+								$data_db['content']['pm_c'],
+								$arr_save);
+						}
+						
+						//开票回款计划
+						if( ! empty(element('gfc_bp',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'gfc_id' => element('gfc_id',$data_get)
+							);
+
+							$this->m_base->save_datatable('pm_bill_plan',
+								$data_save['content']['gfc_bp'],
+								$data_db['content']['gfc_bp'],
+								$arr_save);
+						}
+						
+						//设备清单
+						if( ! empty(element('gfc_eli',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'eli_gfc_id' => element('gfc_id',$data_get)
+							);
+							
+							$this->m_base->save_datatable('pm_eq_list_item',
+								$data_save['content']['gfc_eli'],
+								$data_db['content']['gfc_eli'],
+								$arr_save);
+						}
+						
+						//预算表
+						if( ! empty(element('gfc_bud_sum',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'gfc_id' => element('gfc_id',$data_get)
+							);
+							
+							$this->m_base->save_datatable('fm_gfc_bud',
+								$data_save['content']['gfc_bud_sum'],
+								$data_db['content']['gfc_bud_sum'],
+								$arr_save,
+								'm_gfc',
+								'save_gfc_bud');
+						}
+						
+						//指定评审人
+						if( ! empty(element('gfc_cr',$data_save['content']) ) )
+						{
+							$arr_save=array(
+								'gfc_id' => element('gfc_id',$data_get)
+							);
+							
+							if ( $btn == 'next' 
+							 &&  element('ppo',$data_db['content']) == GFC_PPO_START )
+							{
+							 	$arr_save['gfcc_result'] = '';
+							}
+							
+							$this->m_base->save_datatable('pm_gfc_cr',
+								$data_save['content']['gfc_cr'],
+								$data_db['content']['gfc_cr'],
+								$arr_save,
+								'm_gfc',
+								'save_gfc_cr');
+						}
+						
+						$data_save['content']['gfc_id'] = element('gfc_id',$data_get);
+						
+						$this->m_gfc_secret->create_default_by_gfc($data_save['content']);
+						
+						//工单日志
+						if( $btn == 'next' || $btn == 'pnext' )
+						{
+								$data_save['content_log']['log_note']=
+						'于节点【'.$GLOBALS['m_gfc']['text']['ppo'][$data_db['content']['ppo']].'】'.$ppo_btn_text
+						.',流转至节点【'.$GLOBALS['m_gfc']['text']['ppo'][$data_save['content']['ppo']].'】';
+						}
+						
+						//工单更新
+						switch ($btn)
+						{
+							case 'next':
+								$data_save['wl_have_do']['wl_result']=WL_RESULT_SUCCESS;
+							case 'pnext':
+								
+								if( is_array(element('wl', $data_post) ) 
+								 && ! empty(element('wl_comment', $data_post['wl'])) )
+								$wl_comment = element('wl_comment', $data_post['wl']);
+								
+								//更新工单已完成
+								$data_save['wl_have_do']=array();
+								$data_save['wl_have_do']['wl_comment']=$wl_comment;
+								$data_save['wl_have_do']['wl_log_note']=$data_save['content_log']['log_note'];
+								
+								if( count(element('arr_wl_i_to_do', $data_out)) > 0 )
+								$data_save['wl_have_do']['wl_id_i_do'] = $data_out['arr_wl_i_to_do'];
+								
+								$this->m_work_list->update_wl_have_do(element($this->pk_id,$data_get),$this->model_name,$data_save['wl_have_do']);
+								
+								//更新我的工单
+								$data_save['wl_i'] = array();
+								$data_save['wl_i']['wl_log_note']=$data_save['content_log']['log_note'];
+								
+								if($data_save['content']['ppo'] == 0)
+								{
+									$data_save['wl_i']['wl_status']=WL_STATUS_FINISH;
+									$data_save['wl_i']['wl_result']=WL_RESULT_SUCCESS;
+									$data_save['wl_i']['wl_person_do'] = $this->sess->userdata('c_id');
+    								$data_save['wl_i']['wl_time_do'] = date('Y-m-d H:i:s');
+								}
+								
+								$this->m_work_list->update_wl_i(element($this->pk_id,$data_get),$this->model_name,$data_save['wl_i']);
+								
+								$data_save['wl']['wl_comment_new'] = 
+								'<p>'.date("Y-m-d H:i:s").' '.$this->sess->userdata('c_name').'['.$this->sess->userdata('a_login_id').']</p>'
+								.'<p>'.$data_save['content_log']['log_note'].'</p>';
+								
+								if( ! empty($wl_comment) )
+								$data_save['wl']['wl_comment_new'] = '<p>'.$wl_comment.'</p>';
+								
+								if( $data_save['content']['ppo'] == GFC_PPO_REVIEW
+								 && count($data_save['wl']['c_accept']) > 0 )
+								{
+									$this->m_work_list->add($data_save['wl']);
+								}
+								elseif($data_save['content']['ppo'] != GFC_PPO_END)
+								{
+									$this->m_work_list->add($data_save['wl']);
+								}
+								
+								//获取工单关注人与所有人
+								$arr_wl_person = $this->m_work_list->get_wl_care_accept(element($this->pk_id,$data_get),$this->model_name);
+								
+								$rtn['wl_end'] = array();
+								$rtn['wl_accept'] = $data_save['wl']['c_accept'];
+								$rtn['wl_accept'][] = $this->sess->userdata('c_id');
+								
+								if( count( element('arr_wl_accept', $data_out)) > 0 )
+								$rtn['wl_accept'] =array_values(array_merge($rtn['wl_accept'],$data_out['arr_wl_accept']));
+								
+								$rtn['wl_care'] = $arr_wl_person['care'];
+								$rtn['wl_i'] = $arr_wl_person['accept'];
+								$rtn['wl_op_id'] = element($this->pk_id,$data_get);
+								$rtn['wl_pp_id'] = $this->model_name;
+								$rtn['wl_accept'] =array_unique($rtn['wl_accept']);
+								
+								if($data_save['content']['ppo'] == 0)
+								$rtn['wl_end'] = $arr_wl_person['accept'];
+								
+								break;
+								
+						}
+						
+						$arr_log_content=array();
+						$arr_log_content['new']['content']=$data_save['content'];
+						$arr_log_content['old']['content']=$data_db['content'];
+						
+						//操作日志
+						$data_save['content_log']['op_id']=element($this->pk_id, $data_get);
+						$data_save['content_log']['log_act']=$data_get['act'];
+						$data_save['content_log']['log_url']=$this->url_conf.'/'.$this->pk_id.'/'.element($this->pk_id, $data_get);
+						$data_save['content_log']['log_content']=json_encode($arr_log_content);
+						$data_save['content_log']['log_module']=$this->title;
+						$data_save['content_log']['log_p_id']=$this->proc_id;
+						$this->m_log_operate->add($data_save['content_log']);
+						
+						$rtn['db_time_update'] = date("Y-m-d H:i:s");
+
+						break;
+				}
+				
+				if( $flag_more )
+					return $rtn;
+				
+				echo json_encode($rtn);
+				exit; 
+				break;
+			case 'del':
+				
+				$rtn=$this->del(element($this->pk_id,$data_get));
+				
+				$arr_wl_person = $this->m_work_list->get_wl_care_accept(element($this->pk_id,$data_get),$this->model_name);
+								
+				$rtn['wl_end'] = array();
+				
+				if( count( element('arr_wl_accept', $data_out)) > 0 )
+				$rtn['wl_accept'] =$data_out['arr_wl_accept'];
+								
+				$rtn['wl_accept'][] = $this->sess->userdata('c_id');
+				
+				$rtn['wl_care'] = $arr_wl_person['care'];
+				$rtn['wl_i'] = $arr_wl_person['accept'];
+				$rtn['wl_op_id'] = element($this->pk_id,$data_get);
+				$rtn['wl_pp_id'] = $this->model_name;
+				
+				if( element('rtn',$rtn) )
+				{
+					//操作日志
+					$data_save['content_log']['op_id']=element($this->pk_id, $data_get);
+					$arr_log_content=array();
+					$arr_log_content['old']['content']=$data_db['content'];
+					$data_save['content_log']['log_url']=$this->url_conf.'/'.$this->pk_id.'/'.element($this->pk_id, $data_get);
+					$data_save['content_log']['log_act']=STAT_ACT_REMOVE;
+					$data_save['content_log']['log_module']=$this->title;
+					$data_save['content_log']['log_p_id']=$this->proc_id;
+					$this->m_log_operate->add($data_save['content_log']);
+				}
+				
+				if( $flag_more )
+					return $rtn;
+					
+				echo json_encode($rtn);
+				exit; 
+				break;
+		}
+		
+		/************只读/必填****************/
+		$data_out['field_required']=json_encode($data_out['field_required']);
+		
+		$data_out['field_edit']=array_values(array_diff($data_out['field_edit'],$data_out['field_view']));
+		$data_out['field_edit']=json_encode($data_out['field_edit']);
+		
+		$data_out['field_view']=array_values($data_out['field_view']);
+		$data_out['field_view']=json_encode($data_out['field_view']);
+		
+		$data_out['op_disable']=json_encode($data_out['op_disable']);
+		
+		/************模板赋值*****************/
+		$data_out['act']=$data_get['act'];
+		$data_out['url']=current_url();
+		$data_out['time']=time();
+		if( ! empty(element('time', $data_get)) )
+		$data_out['time']=element('time', $data_get);
+		
+		$data_out['proc_id']=$this->proc_id;
+		$data_out['fun_open']=element('fun_open', $data_get);
+	    $data_out['fun_open_id']=element('fun_open_id', $data_get);
+	    
+	    $data_out['log_gfc_bud']='';
+	    if(is_array(element('log', $data_out)))
+	    {
+	    	$data_out['log_gfc_bud']=element('content[gfc_bud]', $data_out['log']);
+	    }
+	    $data_out['log_gfc_bud']=json_encode(element('log_gfc_bud', $data_out));
+	    $data_out['log']=json_encode(element('log', $data_out));
+		
+		$data_out['log_time']=$this->input->post('log_time');
+		$data_out['log_a_login_id']=$this->input->post('log_a_login_id');
+		$data_out['log_c_name']=$this->input->post('log_c_name');
+		$data_out['log_act']=$this->input->post('log_act');
+		$data_out['log_note']=$this->input->post('log_note');
+	    
+	    $data_out['db_time_create']=element('db_time_create', $data_db['content']);
+	    $data_out['code']=element('gfc_code', $data_db['content']);
+	    
+	    $data_out['ppo']=element('ppo', $data_db['content']);
+	    
+	    $data_out['ppo_name'] = '';
+	    $data_out['ppo_name']=$GLOBALS['m_gfc']['text']['ppo'][element('ppo', $data_db['content'])];
+	
+	    $data_out['fun_no_db']=element('fun_no_db', $data_get);
+	    $data_out['data_db_post'] = $this->input->post('data_db');
+	    
+	    $data_out['flag_edit_more']=element('flag_edit_more', $data_get);
+	    
+	    $data_out[$this->pk_id]=element($this->pk_id,$data_get);
+	    
+	    $data_out['data']=array();
+	    
+		if( count($data_out['field_out'])>0)
+		{
+			foreach ($data_out['field_out'] as $k=>$v) {
+				$arr_f = split_table_field($v);
+				
+				$data_out['data'][$v] = element($arr_f['field'], $data_db['content'],'');
+			}
+		}
+		$data_out['data']=json_encode($data_out['data']);
+		/************载入视图 *****************/
+		$arr_view[]=$this->url_conf;
+		$arr_view[]=$this->url_conf.'_js';
+		
+		$this->m_view->load_view($arr_view,$data_out);
+	}
+	
+	/**
+	 * 
+	 * 检查关联文件
+	 * @param  $arr_save
+	 */
+	function check_file($arr_save)
+	{
+		$rtn=array();
+    	$rtn['rtn']=TRUE;
+    	$rtn['msg']='';
+    	
+    	$gfc_category_secret = $this->m_base->get_field_where('pm_given_financial_code','gfc_category_secret'," AND gfc_id = '{$arr_save['op_id']}'");
+    	if( $gfc_category_secret != GFC_CATEGORY_SECRET_FM)
+    	{
+    		$rtn['rtn']=FALSE;
+    		$rtn['msg']='关联【财务编号】为【涉密】项目，不可上传附件！';
+    	}
+    	 
+    	return $rtn;
+	}
+	
+	/**
+	 * 
+	 * 预算表保存方法
+	 * @param unknown_type $data_save
+	 */
+	function save_gfc_bud($arr_save)
+	{
+		if(element('budi_id',$arr_save))
+		$arr_save['gbud_budi_id'] = $arr_save['budi_id'];
+		
+		if(element('budi_sub',$arr_save))
+		$arr_save['gbud_sub'] = $arr_save['budi_sub'];
+		
+		if(element('budi_sum',$arr_save))
+		$arr_save['gbud_sum'] = $arr_save['budi_sum'];
+		
+		return $arr_save;
+	}
+	
+	/**
+	 * 
+	 * 合同评审人保存方法
+	 * @param unknown_type $data_save
+	 */
+	function save_gfc_cr($arr_save)
+	{
+		if( element('gfcc_comment', $arr_save) )
+		$arr_save['gfcc_comment'] = $this->m_base->filter_img(fun_urldecode($arr_save['gfcc_comment']));
+		
+		if( element('gfcc_comment_return', $arr_save) )
+		$arr_save['gfcc_comment_return'] = $this->m_base->filter_img(fun_urldecode($arr_save['gfcc_comment_return']));
+			
+		return $arr_save;
+	}
+	
+	/**
+	 * 
+	 * 显示组成员变更
+	 * @param $arr pm_contact数据数组
+	 */
+	public function show_change_pm_contact($id,$field,$v)
+	{
+		$rtn=array();
+		$rtn['id'] = $id;
+		$rtn['field'] = $field;
+		$rtn['act'] = STAT_ACT_EDIT;
+		$rtn['err_msg']= $v[$field];
+		
+		switch ($field)
+		{
+			case 'pmc_type':
+
+				$arr_tmp = explode(',', $v['pmc_type']);
+				$rtn['err_msg'] = '';
+				
+				foreach ($arr_tmp as $v1) {
+					$rtn['err_msg'] .= $GLOBALS['m_gfc']['text']['pmc_type'][$v1].',';
+				}
+
+				break;
+			case 'pmc_c_id':
+
+				$rtn['err_msg'] = $this->m_base->get_c_show_by_cid($v['pmc_c_id']);
+
+				break;
+
+		}
+		
+		$rtn['err_msg']='变更前:'.$rtn['err_msg'];
+		
+		return $rtn;
+	}
+	
+	/**
+	 * 
+	 * 显示开票回款计划变更
+	 * @param $arr gfc_bp数据数组
+	 */
+	public function show_change_gfc_bp($id,$field,$v)
+	{
+		$rtn=array();
+		$rtn['id'] = $id;
+		$rtn['field'] = $field;
+		$rtn['act'] = STAT_ACT_EDIT;
+		$rtn['err_msg']= $v[$field];
+		
+		switch ($field)
+		{
+			case 'bp_type':
+
+				$rtn['err_msg'] = $GLOBALS['m_bp']['text']['bp_type'][$v['bp_type']];
+
+				break;
+		}
+		
+		$rtn['err_msg']='变更前:'.$rtn['err_msg'];
+		
+		return $rtn;
+	}
+	
+	/**
+	 * 
+	 * 显示设备清单变更
+	 * @param $arr gfc_eli数据数组
+	 */
+	public function show_change_gfc_eli($id,$field,$v)
+	{
+		$rtn=array();
+		$rtn['id'] = $id;
+		$rtn['field'] = $field;
+		$rtn['act'] = STAT_ACT_EDIT;
+		$rtn['err_msg']= $v[$field];
+		
+		switch ($field)
+		{
+			case 'eli_c_pr':
+
+				$rtn['err_msg'] = $this->m_base->get_c_show_by_c_id($v['eli_c_pr']);
+
+				break;
+			case 'eli_sub':
+
+				$rtn['err_msg'] = $this->m_base->get_field_where('fm_subject','sub_name'," AND sub_id = '{$v['eli_sub']}'");
+
+				break;
+		}
+		
+		$rtn['err_msg']='变更前:'.$rtn['err_msg'];
+		
+		return $rtn;
+	}
+	
+	/**
+	 * 
+	 * 显示预算表变更
+	 * @param $arr gfc_bud数据数组
+	 */
+	public function show_change_gfc_bud($id,$field,$v)
+	{
+		$rtn=array();
+		$rtn['id'] = $id;
+		$rtn['field'] = $field;
+		$rtn['act'] = STAT_ACT_EDIT;
+		$rtn['err_msg']= $v[$field];
+		
+		switch ($field)
+		{
+			case 'budi_sum':
+			case 'budi_sum_start':
+				break;
+			default:
+				return '';
+				break;
+		}
+		
+		$rtn['err_msg']='变更前:'.$rtn['err_msg'];
+		
+		return $rtn;
+	}
+	
+	/**
+	 * 
+	 * 显示评审人变更
+	 * @param $arr gfc_cr数据数组
+	 */
+	public function show_change_gfc_cr($id,$field,$v)
+	{
+		$rtn=array();
+		$rtn['id'] = $id;
+		$rtn['field'] = $field;
+		$rtn['act'] = STAT_ACT_EDIT;
+		$rtn['err_msg']= $v[$field];
+		
+		switch ($field)
+		{
+			case 'gfcc_cr_id':
+
+				$rtn['err_msg'] = $this->m_base->get_field_where('pm_contract_review','cr_name'," AND cr_id = '{$v['gfcc_cr_id']}'");
+
+				break;
+			case 'gfcc_c_id':
+
+				$rtn['err_msg'] = $this->m_base->get_c_show_by_c_id($v['gfcc_c_id']);
+
+				break;
+			case 'gfcc_ou':
+
+				$rtn['err_msg'] = $this->m_base->get_field_where('sys_ou','ou_name'," AND ou_id = '{$v['gfcc_ou']}'");
+
+				break;
+			case 'gfcc_result':
+
+				$rtn['err_msg'] = $GLOBALS['m_gfc']['text']['gfcc_result'][$v['gfcc_result']];
+
+				break;
+		}
+		
+		$rtn['err_msg']='变更前:'.$rtn['err_msg'];
+		
+		return $rtn;
+	}
+}

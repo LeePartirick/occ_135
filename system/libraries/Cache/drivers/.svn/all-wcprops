@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/php/!svn/ver/5/oa_135/system/libraries/Cache/drivers
+END
+Cache_memcached.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/php/!svn/ver/5/oa_135/system/libraries/Cache/drivers/Cache_memcached.php
+END
+Cache_redis.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/php/!svn/ver/5/oa_135/system/libraries/Cache/drivers/Cache_redis.php
+END
+Cache_dummy.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/php/!svn/ver/5/oa_135/system/libraries/Cache/drivers/Cache_dummy.php
+END
+Cache_file.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/php/!svn/ver/5/oa_135/system/libraries/Cache/drivers/Cache_file.php
+END
+Cache_wincache.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/php/!svn/ver/5/oa_135/system/libraries/Cache/drivers/Cache_wincache.php
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/php/!svn/ver/5/oa_135/system/libraries/Cache/drivers/index.html
+END
+Cache_apc.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/php/!svn/ver/5/oa_135/system/libraries/Cache/drivers/Cache_apc.php
+END

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/php/!svn/ver/174/oa_135/application/config/base
+END
+base_conf.php
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/php/!svn/ver/311/oa_135/application/config/base/base_conf.php
+END
+start_conf.php
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/php/!svn/ver/8/oa_135/application/config/base/start_conf.php
+END
+oa.sql
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/php/!svn/ver/10/oa_135/application/config/base/oa.sql
+END

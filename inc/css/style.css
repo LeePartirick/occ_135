@@ -1,0 +1,446 @@
+/*字体*/
+@font-face {font-family: youyuan; src: url("../css/font/youyuan.ttf")}
+
+/* 错误消息*/
+.err-msg{
+	margin: 4px 0 0 0;
+	padding: 0;
+	color: red;
+	text-align:right;
+}
+		
+/* 段落前空2格*/
+.p_text{text-indent:2em}
+
+/* div 半透明*/
+.div_filter{filter:alpha(Opacity=80);-moz-opacity:0.8;opacity: 0.9;}
+
+/* div 透明*/
+.div_filter100{filter:alpha(Opacity=0);-moz-opacity:0;opacity: 0;}
+
+/* div 菱形剪切 */
+.div_diamond{ 
+  transform:rotate(45deg);   
+  -ms-transform:rotate(45deg); 
+  /* Internet Explorer */  
+   -moz-transform:rotate(45deg); 
+  /* Firefox */   
+  -webkit-transform:rotate(45deg); 
+  /* Safari 和 Chrome */   
+  -o-transform:rotate(45deg); 
+}
+
+/* div 圆形剪切 */
+.div_circle{ border-radius:50%; overflow:hidden;}
+
+/* div 居右 */
+.div_right{ float:right;text-align:right;margin:0px auto 0px auto;}
+
+/* easyui 表格线*/
+.lines-both .datagrid-body td{
+}
+.lines-no .datagrid-body td{
+    border-right:1px dotted transparent;
+    border-bottom:1px dotted transparent;
+}
+.lines-right .datagrid-body td{
+    border-bottom:1px dotted transparent;
+}
+.lines-bottom .datagrid-body td{
+    border-right:1px dotted transparent;
+}
+
+/* 错误标签 */
+.img-err {
+  background: url('../js/easyui/themes/default/images/messager_icons.png') no-repeat scroll -64px 0;
+}
+.img-info {
+  background: url('../js/easyui/themes/default/images/messager_icons.png') no-repeat scroll 0 0;
+}
+.img-question {
+  background: url('../js/easyui/themes/default/images/messager_icons.png') no-repeat scroll -32px 0;
+}
+.img-warn {
+  background: url('../js/easyui/themes/default/images/messager_icons.png') no-repeat scroll -96px 0;
+}
+
+/* 验证码*/
+.icon-yzm{
+    background: url('../js/easyui/themes/default/images/loading.gif')  no-repeat center center;
+}
+
+/*字体*/
+.ft16{
+    font-size:16px;
+}
+
+/*mebile badge 提示特效*/
+.m-badge:not(.l-btn),
+.l-btn.m-badge::after{
+	display: inline-block;
+	min-width: 10px;
+	line-height: 1;
+	font-size: 12px;
+	text-align: center;
+	white-space: nowrap;
+	border-radius: 10px;
+	padding: 2px 4px;
+	border-style: solid;
+	border-width: 0px;
+	background-color: #d9534f;
+	color: #fff;
+	z-index: 99999;
+}
+.l-btn.m-badge::after,
+.l-btn .m-badge{
+	position: absolute;
+	top: -0px;
+	right: -0px;
+}
+.tabs-inner .m-badge{
+	position: absolute;
+	top: 1px;
+	right: -10px;
+}
+.tabs-inner>.tabs-title>.m-badge{
+	top: 0;
+	right: 0;
+}
+.tabs-header-bottom .tabs-inner>.tabs-title>.m-badge{
+	top: auto;
+	bottom: 0;
+	right: 0;
+}
+.panel-footer .l-btn .l-btn-icon-top .m-badge,
+.panel-footer .l-btn .l-btn-icon-bottom .m-badge{
+	top: 0;
+	right: -10px;
+}
+.l-btn.m-badge::after{
+	content: attr(data-badge);
+}
+
+/*easyui 修改*/
+.textbox {
+  position: relative;
+  border: 1px solid #ddd;
+/*  border-style:none;
+  border-bottom-style:solid;
+  border-bottom-width:thin;*/
+  background-color: #fff;
+  vertical-align: middle;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  -moz-border-radius: 0px 0px 0px 0px;
+  -webkit-border-radius: 0px 0px 0px 0px;
+  border-radius: 0px 0px 0px 0px;
+}
+
+.textbox textarea {
+}
+
+.validatebox-invalid {
+  border-color: #ffa8a8;
+  background-color: #fff3f3;
+  color: #000;
+}
+
+.textbox .textbox-text {
+  font-size: 14px;
+  border: 0;
+  margin: 0;
+  padding: 4px;
+  font-family: youyuan;
+  white-space: normal;
+  vertical-align: top;
+  outline-style: none;
+  resize: none;
+  -moz-border-radius: 0px 0px 0px 0px;
+  -webkit-border-radius: 0px 0px 0px 0px;
+  border-radius: 0px 0px 0px 0px;
+}
+
+.tree-title {
+  font-size: 14px;
+  font-family: youyuan;
+  display: inline-block;
+  text-decoration: none;
+  vertical-align: top;
+  white-space: nowrap;
+  padding: 0 2px;
+  height: 18px;
+  line-height: 18px;
+}
+.tree-node-proxy {
+  font-size: 14px;
+  font-family: youyuan;
+  line-height: 20px;
+  padding: 0 2px 0 20px;
+  border-width: 1px;
+  border-style: solid;
+  z-index: 9900000;
+}
+
+.l-btn-text {
+  display: inline-block;
+  vertical-align: top;
+  width: auto;
+  line-height: 24px;
+  font-size: 14px;
+  padding: 0;
+  margin: 0 4px;
+}
+.panel-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #0E2D5F;
+  height: 16px;
+  line-height: 16px;
+}
+.tabs-title {
+  font-size: 14px;
+}
+ 
+.datagrid-cell,
+.datagrid-cell-group,
+.datagrid-header-rownumber,
+.datagrid-cell-rownumber {
+  margin: 0;
+  padding: 0 4px;
+  white-space: nowrap;
+  word-wrap: normal;
+  overflow: hidden;
+  height: 18px;
+  line-height: 18px;
+  font-size: 14px;
+}
+.datagrid-header .datagrid-cell span {
+  font-size: 14px;
+}
+
+.datagrid-header-row {
+  background-color: #e6e6f2;
+}
+
+.pagination-info {
+  float: right;
+  margin: 0 6px 0 0;
+  padding: 0;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+}
+.textbox-label {
+  display: inline-block;
+  width: 100px;
+  height: 22px;
+  line-height: 22px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+  padding-right: 5px;
+  font-size: 14px;
+}
+.combobox-item,
+.combobox-group,
+.combobox-stick {
+  font-size: 14px;
+  padding: 3px;
+}
+.menu-text {
+  height: 20px;
+  line-height: 20px;
+  float: left;
+  padding-left: 28px;
+  font-size: 14px;
+}
+
+.switchbutton-handle {
+  display: inline-block;
+  text-align: center;
+  height: 100%;
+  float: left;
+  font-size: 14px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+}
+.progressbar-value .progressbar-text {
+  background-color: #e0ecff;
+  color: #000000;
+}
+.progressbar-text {
+  color: #000000;
+  font-size: 14px;
+}
+
+.messager-body {
+  padding: 10px 10px 30px 10px;
+  font-size:14px;
+  overflow: auto;
+}
+
+.switchbutton-on,
+.switchbutton-off,
+.switchbutton-handle {
+  display: inline-block;
+  text-align: center;
+  height: 100%;
+  float: left;
+  font-size: 14px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+}
+
+/* body默认样式*/
+body{
+	font-size:14px;
+	font-family: youyuan;
+}
+
+/*全局格式*/
+div{
+	font-size:14px;
+}
+
+table td{font-size:14px;}
+
+.table_form {border:solid 1px #ccc;cellspacing:1;border-collapse:collapse;} 
+.table_form td{ border: 1px solid #ccc;}
+
+.table_no_line{ border: 0px  }
+.table_no_line td{ border: 0px;  padding:5px;}
+
+.tr_title td{padding-bottom:2px;border-bottom:1px solid #0e2d5f;}
+.tr_title span{ font-size:18px;color:#0e2d5f;font-weight:bold;border-left:3px solid #0e2d5f;padding-left:5px; }
+
+.field_s {
+	color:#0e2d5f;
+	font-weight:bold;
+	font-size:14px;
+}
+.link {
+	color:#000;
+	text-decoration:underline ;
+}
+
+/*标题*/
+.tb_title {
+	color:#000;
+	font-size:18px;
+	text-decoration:underline ;
+}
+
+/*图片上传背景*/
+.div_img_upload {
+background:url('img/img_upload.png') fixed center center no-repeat;background-size: cover;
+}
+
+/*div 必填效果*/
+.div_input_require {
+border:1.5px solid red;
+}
+
+/* 数据表格单元格错误*/
+.data_table_cell_err{
+	background:#FFD2D2;
+}
+
+
+/*对话气泡*/
+.triangle-border {
+	position:relative;
+	padding:5px;
+	margin:1em 0 0em;
+	border:1px solid #999;
+	color:#333;
+	background:#fff;
+	/* css3 */
+	-webkit-border-radius:10px;
+	-moz-border-radius:10px;
+	border-radius:10px;
+	text-align:left;
+}
+.triangle-border.left {
+	margin-left:5px;
+}
+.triangle-border.right {
+	margin-right:5px;
+}
+.triangle-border:before {
+	content:"";
+	position:absolute;
+	bottom:-20px; /* value = - border-top-width - border-bottom-width */
+	left:40px; /* controls horizontal position */
+    border-width:20px 20px 0;
+	border-style:solid;
+    border-color:#999 transparent;
+    display:block; 
+    width:0;
+}
+/* creates the smaller  triangle */
+.triangle-border:after {
+	content:"";
+	position:absolute;
+	bottom:-13px; /* value = - border-top-width - border-bottom-width */
+	left:47px; 
+	border-width:13px 13px 0;
+	border-style:solid;
+	border-color:#fff transparent;
+    display:block; 
+    width:0;
+}
+.triangle-border.top:before {
+	top:-20px; /* value = - border-top-width - border-bottom-width */
+	bottom:auto;
+	left:auto;
+	right:40px; /* controls horizontal position */
+    border-width:0 20px 20px;
+}
+/* creates the smaller  triangle */
+.triangle-border.top:after {
+	top:-13px; /* value = - border-top-width - border-bottom-width */
+	bottom:auto;
+	left:auto;
+	right:47px; /* value = (:before right) + (:before border-right) - (:after border-right) */
+    border-width:0 13px 13px;
+}
+.triangle-border.left:before {
+	top:15px; /* controls vertical position */
+	bottom:auto;
+	left:-16.3px; /* value = - border-left-width - border-right-width */
+	border-width:7px 16.3px 7px 0;
+	border-color:transparent #999;
+}
+/* creates the smaller  triangle */
+.triangle-border.left:after {
+	top:16px; /* value = (:before top) + (:before border-top) - (:after border-top) */
+	bottom:auto;
+	left:-14px; /* value = - border-left-width - border-right-width */
+	border-width:6px 14px 6px 0;
+	border-color:transparent #fff;
+}
+/* creates the larger triangle */
+.triangle-border.right:before {
+	top:15px; /* controls vertical position */
+	bottom:auto;
+    left:auto;
+	right:-16.3px; /* value = - border-left-width - border-right-width */
+	border-width:7px 0 7px 16.3px;
+	border-color:transparent #999;
+}
+/* creates the smaller  triangle */
+.triangle-border.right:after {
+	top:16px; /* value = (:before top) + (:before border-top) - (:after border-top) */
+	bottom:auto;
+    left:auto;
+	right:-14px; /* value = - border-left-width - border-right-width */
+	border-width:6px 0 6px 14px;
+	border-color:transparent #EFF5FF;
+}

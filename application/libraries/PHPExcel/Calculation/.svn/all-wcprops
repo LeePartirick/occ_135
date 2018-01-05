@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation
+END
+Engineering.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/Engineering.php
+END
+ExceptionHandler.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/ExceptionHandler.php
+END
+DateTime.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/DateTime.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/Exception.php
+END
+Database.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/Database.php
+END
+LookupRef.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/LookupRef.php
+END
+FormulaToken.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/FormulaToken.php
+END
+Functions.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/Functions.php
+END
+functionlist.txt
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/functionlist.txt
+END
+Logical.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/Logical.php
+END
+TextData.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/TextData.php
+END
+MathTrig.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/MathTrig.php
+END
+FormulaParser.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/FormulaParser.php
+END
+Statistical.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/Statistical.php
+END
+Financial.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/Financial.php
+END
+Function.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/php/!svn/ver/8/oa_135/application/libraries/PHPExcel/Calculation/Function.php
+END
